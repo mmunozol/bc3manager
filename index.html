@@ -40,7 +40,7 @@ html.dark{
 
 html,body{height:100%;font-family:'Inter',sans-serif;font-size:13px;color:var(--text);background:var(--bg);-webkit-font-smoothing:antialiased;}
 button,input,select,textarea{font-family:'Inter',sans-serif;font-size:13px;}
-.view{display:none;height:100vh;overflow:hidden;flex-direction:column;}
+.view{display:none;height:100vh;height:100dvh;overflow:hidden;flex-direction:column;}
 .view.active{display:flex;}
 .topbar{height:56px;background:var(--panel);border-bottom:1px solid var(--bd);padding:0 20px;display:flex;align-items:center;gap:12px;flex-shrink:0;}
 .logo{font-weight:600;font-size:14px;letter-spacing:-.3px;}
@@ -95,7 +95,7 @@ button,input,select,textarea{font-family:'Inter',sans-serif;font-size:13px;}
 .vcol.collapsed .col-meta{display:none;}
 #col1{flex:0 0 300px;border-right:1px solid var(--bd);}
 #col2{flex:0 0 240px;border-right:1px solid var(--bd);}
-#col3{flex:1;background:#f0eff8;display:flex;flex-direction:column;}
+#col3{flex:1;background:#f0eff8;display:flex;flex-direction:column;position:relative;}
 /* Cabecera de columna */
 .col-header{display:flex;align-items:center;gap:6px;padding:7px 10px;border-bottom:1px solid var(--bd);background:var(--panel2);flex-shrink:0;min-height:34px;}
 .col-header>span:first-of-type{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--muted2);white-space:nowrap;}
@@ -171,14 +171,26 @@ button,input,select,textarea{font-family:'Inter',sans-serif;font-size:13px;}
 #dc{flex:1;overflow-y:auto;padding:10px 10px;}
 /* Responsive: portrait → visor debajo */
 @media (orientation:portrait),(max-width:700px){
-  #vb-body{flex-direction:column;}
-  .col-div{flex:0 0 5px;cursor:row-resize;}
-  .col-div::after{width:24px;height:3px;}
-  #col1,#col2{flex:0 0 auto;max-height:35vh;border-right:none;border-bottom:1px solid var(--bd);}
-  #col2{max-height:30vh;}
-  #col3{flex:1;min-height:200px;}
-  .vcol.collapsed{flex:0 0 28px!important;min-width:0!important;max-width:none!important;max-height:28px!important;}
-  .vcol.collapsed .col-header{writing-mode:horizontal-tb;padding:4px 10px;}
+  /* Fila superior: presupuesto + detalle lado a lado · Fila inferior: visor a todo el ancho */
+  #vb-body{flex-direction:row;flex-wrap:wrap;}
+  .col-div{display:none;}
+  #col1,#col2{flex:1 1 0;min-width:0;height:44%;max-height:none;border-bottom:1px solid var(--bd);}
+  #col1{border-right:1px solid var(--bd);}
+  #col2{border-right:none;}
+  #col3{flex:1 1 100%;width:100%;height:56%;min-height:0;}
+  /* Columna superior colapsada → barra vertical estrecha, la otra ocupa el ancho */
+  #col1.collapsed,#col2.collapsed{flex:0 0 32px!important;min-width:32px!important;max-width:32px!important;height:44%;max-height:none!important;}
+  /* Visor colapsado → barra horizontal, columnas toman toda la altura */
+  #col3.collapsed{flex:1 1 100%!important;height:36px!important;min-height:36px!important;max-height:36px!important;min-width:0!important;max-width:none!important;}
+  #col3.collapsed .col-header{writing-mode:horizontal-tb;padding:4px 10px;}
+  #vb-body:has(#col3.collapsed) #col1,
+  #vb-body:has(#col3.collapsed) #col2{height:calc(100% - 36px);}
+  /* Ambas columnas colapsadas → barras horizontales arriba, visor casi a pantalla completa */
+  #vb-body:has(#col1.collapsed):has(#col2.collapsed) #col1,
+  #vb-body:has(#col1.collapsed):has(#col2.collapsed) #col2{height:36px;flex:1 1 0!important;min-width:0!important;max-width:none!important;}
+  #vb-body:has(#col1.collapsed):has(#col2.collapsed) #col1 .col-header,
+  #vb-body:has(#col1.collapsed):has(#col2.collapsed) #col2 .col-header{writing-mode:horizontal-tb;padding:4px 10px;}
+  #vb-body:has(#col1.collapsed):has(#col2.collapsed) #col3{height:calc(100% - 36px);}
 }
 /* Header/status del visor */
 #sm-wrap{display:flex;align-items:center;gap:4px;flex:1;justify-content:flex-end;}
@@ -241,7 +253,7 @@ button,input,select,textarea{font-family:'Inter',sans-serif;font-size:13px;}
 .pr{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;font-size:11px;}
 .pr:last-child{margin-bottom:0;padding-top:4px;border-top:1px solid var(--bd);font-weight:600;}
 .prl{color:var(--muted);}
-.prv{font-family:'IBM Plex Mono',monospace;font-weight:600;}
+.prv{font-family:inherit;font-weight:600;font-size:12px;font-variant-numeric:tabular-nums;letter-spacing:.01em;}
 .prv.a{color:var(--acc);}
 .ec{padding:6px 8px;border-radius:5px;background:var(--panel2);border:1px solid var(--bd);cursor:pointer;margin-bottom:4px;transition:all .1s;}
 .ec:hover{background:var(--acc-bg);border-color:var(--acc-bd);}
@@ -316,10 +328,6 @@ button,input,select,textarea{-webkit-appearance:none;}
 
 /* Visor en móvil: cols apiladas, visor prioritario */
 @media (max-width:600px){
-  #vb-body{flex-direction:column;}
-  #col1,#col2{max-height:30vh;flex:0 0 30vh;border-right:none;border-bottom:1px solid var(--bd);}
-  #col3{flex:1;min-height:220px;}
-  .col-div{cursor:row-resize;}
   /* Botones más grandes para touch */
   .t3{width:38px!important;height:38px!important;}
   /* Info card más pequeña */
@@ -327,10 +335,6 @@ button,input,select,textarea{-webkit-appearance:none;}
 }
 
 /* Tablet portrait */
-@media (min-width:601px) and (max-width:900px) and (orientation:portrait){
-  #col1{flex:0 0 260px;}
-  #col2{flex:0 0 200px;}
-}
 
 /* Tablet landscape: layout horizontal normal pero más compacto */
 @media (min-width:601px) and (max-width:1100px) and (orientation:landscape){
@@ -350,7 +354,6 @@ button,input,select,textarea{-webkit-appearance:none;}
   .col-meta{display:none;}
   .vbg{display:none;}
 }
-
 
 /* ── Tarjetas de obras ─────────────────────────────────────────── */
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-top:12px;}
@@ -422,19 +425,49 @@ html.dark #p3d{background:#0f1117;}
 html.dark #dz{color:var(--muted);}
 html.dark .slice-panel-inner,
 html.dark #slice-panel,
-html.dark #storeys-panel,
-html.dark #types-panel{
+/* Panel caja de sección — adaptable light/dark */
+.sbp-card{background:rgba(255,255,255,.92);border:1px solid rgba(0,0,0,.12);box-shadow:0 8px 32px rgba(0,0,0,.18);}
+.sbp-title{color:#1f2937;}
+.sbp-muted{color:#6b7280;}
+.sbp-ico{color:#6b7280;}
+.sbp-btn{background:#f3f4f6;border:1px solid #d1d5db;color:#374151;}
+.sbp-btn:hover{background:#e5e7eb;}
+html.dark .sbp-card{background:rgba(20,22,30,.85);border-color:rgba(255,255,255,.12);box-shadow:0 8px 32px rgba(0,0,0,.4);}
+html.dark .sbp-title{color:#fff;}
+html.dark .sbp-muted{color:rgba(255,255,255,.45);}
+html.dark .sbp-ico{color:rgba(255,255,255,.7);}
+html.dark .sbp-btn{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.15);color:rgba(255,255,255,.8);}
+html.dark .sbp-btn:hover{background:rgba(255,255,255,.15);}
+.sbp-range{-webkit-appearance:none;appearance:none;height:5px;border-radius:3px;background:var(--acc);outline:none;}
+.sbp-range::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--acc);box-shadow:0 1px 3px rgba(0,0,0,.25);cursor:pointer;}
+.sbp-range::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--acc);box-shadow:0 1px 3px rgba(0,0,0,.25);cursor:pointer;}
+.sbp-range::-moz-range-track{height:5px;border-radius:3px;background:var(--acc);}
+html.dark #cats-panel,
+html.dark #views-panel,
+html.dark #secbox-panel{
   background:var(--panel)!important;
   border-color:var(--bd)!important;
   color:var(--text)!important;
 }
-html.dark #types-panel label,
+html.dark #cats-panel label,
 html.dark #types-list div{color:var(--text)!important;}
+html.dark #views-list div{color:var(--text)!important;}
+html.dark #cats-panel>div:first-child,html.dark #views-panel>div:first-child{border-color:var(--bd)!important;}
 html.dark #hc{background:rgba(26,29,39,.95)!important;color:var(--text)!important;border-color:var(--bd)!important;}
 html.dark .ver-card .chip.xkt{background:#1e1030;color:#c4b5fd;border-color:#4c1d95;}
 html.dark input[type=range]{accent-color:var(--acc);}
 html.dark .col-header{background:var(--panel);}
 html.dark scrollbar-color: var(--bd) var(--panel);
+/* Multi-selección checkboxes */
+.tn-cb{flex-shrink:0!important;width:16px!important;height:16px!important;min-width:16px!important;min-height:16px!important;margin-left:4px;margin-right:4px;accent-color:var(--acc);cursor:pointer;}
+.tn .tl{min-width:0;flex:1 1 0%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.tn.ms-sel{background:var(--acc-bg);}
+html.dark .tn.ms-sel{background:var(--acc-bg);}
+#ms-bar{display:none;flex-shrink:0;padding:8px 10px;background:var(--acc-bg);border-top:1px solid var(--acc-bd);align-items:center;gap:8px;}
+#ms-bar.visible{display:flex;}
+html.dark #ms-bar{background:var(--acc-bg);border-color:var(--acc-bd);}
+html.dark .tn-cb{background:#2a2a2a!important;border-color:#555!important;}
+html.dark .tn-cb[data-checked="1"]{background:var(--acc)!important;border-color:var(--acc)!important;}
 
 /* ── BUSCADOR MODAL ───────────────────────────────────────────────────── */
 #srch-overlay{
@@ -510,7 +543,7 @@ html.dark .sri-snippet mark{background:rgba(59,130,246,.22);}
 <!-- HOME -->
 <div class="view active" id="v-home">
   <div class="topbar">
-    <div class="logo">BC3 <em>Manager</em> <span id="dev-ind" style="font-size:9px;color:var(--muted);font-weight:400;margin-left:4px;">v1</span></div>
+    <div class="logo">BC3 <em>Manager</em> <span id="dev-ind" style="font-size:9px;color:var(--muted);font-weight:400;margin-left:4px;">v2.2</span></div>
     <div class="tr">
       <button class="btn p" id="bn-np">
         <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -623,6 +656,12 @@ html.dark .sri-snippet mark{background:rgba(59,130,246,.22);}
       </div>
       <div class="vtb" style="display:none;"></div>
       <div id="tv" class="col-scroll"></div>
+      <!-- Barra multi-selección -->
+      <div id="ms-bar">
+        <span id="ms-cnt" style="font-size:11px;font-weight:600;color:var(--acc);flex:1;">0 partidas</span>
+        <button id="ms-iso" class="btn p" style="font-size:11px;padding:4px 12px;display:flex;align-items:center;justify-content:center;">Aislar en visor</button>
+        <button id="ms-clr" class="btn" style="font-size:13px;padding:0;width:32px;display:flex;align-items:center;justify-content:center;" title="Limpiar selección">✕</button>
+      </div>
     </div>
     <div class="col-div" id="div12" data-cols="col1,col2"></div>
     <!-- COL 2: Detalle -->
@@ -647,14 +686,13 @@ html.dark .sri-snippet mark{background:rgba(59,130,246,.22);}
         <span>Modelo 3D</span>
         <div class="vtoolbar" style="display:flex;gap:3px;align-items:center;flex:1;justify-content:flex-end;padding-right:4px;flex-wrap:wrap;">
           <button class="t3" id="bn-fit" title="Encuadrar todo" style="padding:7px;"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg></button>
+          <button class="t3" id="bn-pcolor" title="Colorear por partidas" style="padding:7px;"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="13.5" r="2.5"/><circle cx="8.5" cy="17.5" r="2.5"/><circle cx="6.5" cy="9.5" r="2.5"/></svg></button>
           <button class="t3" id="bn-ghost" title="Modo fantasma / XRay" style="padding:7px;"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg></button>
           <button class="t3" id="bn-iso" title="Aislar selección" style="padding:7px;"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="9" stroke-dasharray="3 2"/></svg></button>
           <button class="t3" id="bn-clr" title="Limpiar todo" style="padding:7px;"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-          <button class="t3" id="bn-slice" title="Sección horizontal (Z)" style="padding:7px;"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="1"/><line x1="3" y1="12" x2="21" y2="12"/></svg></button>
-          <button class="t3" id="bn-slice-elem" title="Sección paralela al elemento seleccionado" style="padding:7px;"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="1"/><line x1="12" y1="3" x2="12" y2="21"/><path d="M8 7l4-4 4 4"/></svg></button>
-          <button class="t3" id="bn-storeys" title="Plantas del edificio" style="padding:7px;"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="3" rx="1"/><rect x="3" y="10" width="18" height="3" rx="1"/><rect x="3" y="16" width="18" height="3" rx="1"/></svg></button>
-          <button class="t3" id="bn-measure" title="Medir distancias" style="padding:7px;"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l4-8 4 8"/><line x1="5" y1="13" x2="9" y2="13"/><line x1="17" y1="7" x2="21" y2="11"/><line x1="21" y1="7" x2="17" y2="11"/></svg></button>
-          <button class="t3 a" id="bn-types" title="Categorías" style="padding:7px;"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></button>
+          <button class="t3" id="bn-secbox" title="Caja de sección" style="padding:7px;"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></button>
+          <button class="t3" id="bn-cats" title="Categorías" style="padding:7px;"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></button>
+          <button class="t3" id="bn-views" title="Vistas guardadas" style="padding:7px;"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h2l2-3h6l2 3h2a1 1 0 011 1v11a1 1 0 01-1 1H5a1 1 0 01-1-1V8a1 1 0 011-1z"/><circle cx="12" cy="13" r="3.5"/></svg></button>
         </div>
         <button class="col-tog" id="tog-col3" title="Colapsar">‹</button>
       </div>
@@ -666,41 +704,62 @@ html.dark .sri-snippet mark{background:rgba(59,130,246,.22);}
           </div>
         </div>
         <canvas id="cv"></canvas>
-        <div id="hc" style="display:none;position:absolute;bottom:36px;left:8px;max-width:240px;background:rgba(255,255,255,.93);color:#374151;border-radius:6px;padding:6px 9px;font-size:10px;z-index:30;pointer-events:none;border:1px solid rgba(0,0,0,.1);box-shadow:0 2px 6px rgba(0,0,0,.1);">
-          <div style="font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:220px;" id="hct">—</div>
+        <div id="hc" style="display:none;position:absolute;bottom:36px;left:8px;width:max-content;max-width:70%;background:rgba(255,255,255,.93);color:#374151;border-radius:6px;padding:6px 9px;font-size:10px;z-index:30;pointer-events:none;border:1px solid rgba(0,0,0,.1);box-shadow:0 2px 6px rgba(0,0,0,.1);">
+          <div style="font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" id="hct">—</div>
           <div id="hcp" style="color:#6b7280;font-size:9px;margin-top:1px;"></div>
         </div>
         <div id="pg" style="position:absolute;top:0;left:0;height:2px;background:var(--acc);width:0%;transition:width .3s;display:none;z-index:20;"></div>
         <!-- Sección -->
-        <div id="slice-panel" style="display:none;position:absolute;bottom:44px;left:50%;transform:translateX(-50%);background:rgba(255,255,255,.97);border:1px solid rgba(0,0,0,.12);border-radius:10px;padding:10px 14px;z-index:30;box-shadow:0 4px 16px rgba(0,0,0,.15);min-width:260px;">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-            <span style="font-size:11px;font-weight:700;color:#374151;" id="slice-title">Sección horizontal</span>
-            <button id="slice-off" style="border:none;background:none;cursor:pointer;font-size:13px;color:#9ca3af;padding:0;" style="padding:7px;"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-          </div>
-          <div style="display:flex;align-items:center;gap:8px;">
-            <span style="font-size:10px;color:#9ca3af;">▼</span>
-            <input type="range" id="slice-slider" min="0" max="100" value="70" style="flex:1;accent-color:#6c63ff;">
-            <span style="font-size:10px;color:#9ca3af;">▲</span>
-          </div>
-          <div style="text-align:center;margin-top:6px;">
-            <span style="font-size:10px;color:#6b7280;" id="slice-val">70%</span>
-          </div>
-        </div>
-        <!-- Plantas -->
-        <div id="storeys-panel" style="display:none;position:absolute;top:44px;right:8px;background:rgba(255,255,255,.97);border:1px solid rgba(0,0,0,.12);border-radius:10px;padding:0;z-index:30;min-width:200px;max-height:360px;overflow-y:auto;box-shadow:0 4px 16px rgba(0,0,0,.15);">
-          <div style="padding:10px 12px 6px;border-bottom:1px solid #eee;font-size:11px;font-weight:700;color:#374151;">Plantas</div>
-          <div id="storeys-list" style="padding:4px 0;"></div>
-        </div>
-        <!-- Panel categorías -->
-        <div id="types-panel" style="display:none;position:absolute;top:44px;right:8px;background:rgba(255,255,255,.97);border:1px solid rgba(0,0,0,.12);border-radius:10px;padding:0;z-index:30;min-width:210px;max-height:420px;box-shadow:0 4px 16px rgba(0,0,0,.15);overflow:hidden;flex-direction:column;">
-          <div style="padding:10px 12px 6px;border-bottom:1px solid #eee;display:flex;justify-content:space-between;align-items:center;">
-            <span style="font-size:11px;font-weight:700;color:#374151;">Categorías</span>
-            <div style="display:flex;gap:4px;">
-              <button onclick="setCatsVisible(true)" style="font-size:9px;padding:2px 6px;border:1px solid #d1d5db;border-radius:4px;background:#f9fafb;cursor:pointer;color:#374151;">Todo</button>
-              <button onclick="setCatsVisible(false)" style="font-size:9px;padding:2px 6px;border:1px solid #d1d5db;border-radius:4px;background:#f9fafb;cursor:pointer;color:#374151;">Nada</button>
+        <!-- Caja de sección -->
+        <div id="secbox-panel" style="display:none;position:absolute;bottom:calc(16px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);z-index:30;min-width:560px;max-width:820px;width:70%;">
+          <div class="sbp-card" style="backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:12px;padding:14px 18px;">
+            <!-- Header -->
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+              <svg viewBox="0 0 20 20" width="14" height="14" fill="none" class="sbp-ico" stroke="currentColor" stroke-width="1.6"><path d="M10 2L2 6v8l8 4 8-4V6L10 2z"/><path d="M2 6l8 4m0 0l8-4m-8 4v8"/></svg>
+              <span class="sbp-title" style="font-size:12px;font-weight:700;flex:1;letter-spacing:.02em;">Caja de sección</span>
+              <button id="sb-hide" title="Ocultar caja" class="sbp-btn" style="border-radius:6px;cursor:pointer;padding:4px 10px;display:flex;align-items:center;gap:5px;font-size:11px;">
+                <svg viewBox="0 0 20 20" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M1 10s3-6 9-6 9 6 9 6-3 6-9 6-9-6-9-6z"/><circle cx="10" cy="10" r="3"/><line x1="3" y1="3" x2="17" y2="17"/></svg>
+                Ocultar
+              </button>
+              <button id="sb-align" title="Alinear caja con una cara del modelo (clic en un muro)" style="background:var(--acc);border:none;border-radius:6px;cursor:pointer;padding:4px 10px;display:flex;align-items:center;gap:5px;color:#fff;font-size:11px;font-weight:600;">
+                <svg viewBox="0 0 20 20" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="14" height="14" rx="1" transform="rotate(12 10 10)"/><path d="M10 1v4M10 15v4M1 10h4M15 10h4"/></svg>
+                Alinear
+              </button>
+              <button id="sb-reset" title="Resetear caja" class="sbp-btn" style="border-radius:6px;cursor:pointer;padding:4px 10px;display:flex;align-items:center;gap:5px;font-size:11px;">
+                <svg viewBox="0 0 20 20" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 4v5h5M16 16v-5h-5"/><path d="M4.93 9A8 8 0 1115 15.07"/></svg>
+                Reset
+              </button>
+              <button id="secbox-off" title="Cerrar" class="sbp-btn" style="border-radius:6px;cursor:pointer;padding:4px 7px;display:flex;align-items:center;">
+                <svg viewBox="0 0 20 20" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="4" y1="4" x2="16" y2="16"/><line x1="16" y1="4" x2="4" y2="16"/></svg>
+              </button>
+            </div>
+            <!-- Control de traslación de cara -->
+            <div style="display:flex;align-items:center;gap:10px;">
+              <span class="sbp-muted" style="font-size:10px;font-weight:600;white-space:nowrap;">Cara</span>
+              <span class="sbp-title" style="font-size:11px;font-weight:700;white-space:nowrap;min-width:34px;" id="sb-face-label">—</span>
+              <input type="range" id="sb-face-slider" class="sbp-range" min="0" max="100" value="0" style="flex:1;cursor:pointer;">
+              <span class="sbp-muted" style="font-size:10px;white-space:nowrap;" id="sb-align-hint"></span>
             </div>
           </div>
-          <div id="types-list" style="overflow-y:auto;max-height:360px;padding:6px 0;"></div>
+        </div>
+        <!-- fin secbox-panel -->
+        <!-- Plantas -->
+        <div id="cats-panel" style="display:none;position:absolute;top:44px;right:8px;width:232px;max-height:min(60vh,440px);background:rgba(255,255,255,.97);border:1px solid rgba(0,0,0,.12);border-radius:10px;z-index:29;flex-direction:column;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.15);">
+          <div style="padding:8px 12px;border-bottom:1px solid #eee;display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:11px;font-weight:700;color:#374151;">Categorías</span>
+            <div style="display:flex;gap:4px;">
+              <button onclick="setCatsVisible(true)" style="font-size:9px;padding:2px 8px;border:1px solid #d1d5db;border-radius:4px;background:#f9fafb;cursor:pointer;color:#374151;">Todo</button>
+              <button onclick="setCatsVisible(false)" style="font-size:9px;padding:2px 8px;border:1px solid #d1d5db;border-radius:4px;background:#f9fafb;cursor:pointer;color:#374151;">Nada</button>
+            </div>
+          </div>
+          <div id="types-list" style="overflow-y:auto;padding:6px 0;"></div>
+        </div>
+        <div id="views-panel" style="display:none;position:absolute;top:44px;right:8px;width:232px;max-height:min(60vh,440px);background:rgba(255,255,255,.97);border:1px solid rgba(0,0,0,.12);border-radius:10px;z-index:29;flex-direction:column;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.15);">
+          <div style="padding:8px 10px;border-bottom:1px solid #eee;">
+            <button id="sp-view-save" style="width:100%;font-size:11px;padding:6px 0;border:1px solid var(--acc);border-radius:6px;background:none;color:var(--acc);cursor:pointer;font-weight:600;">+ Guardar vista actual</button>
+          </div>
+          <div id="views-list" style="overflow-y:auto;padding:4px 0;"></div>
+        </div>
         </div>
       </div>
     </div>
@@ -758,7 +817,6 @@ html.dark .sri-snippet mark{background:rgba(59,130,246,.22);}
 </div>
 
 <!-- ══ BUSCADOR ══════════════════════════════════════════════════════════ -->
-
 
 <!-- ══ MODALES ══════════════════════════════════════════════════════════ -->
 
@@ -860,6 +918,7 @@ function dbD(s,k,cb){openDB(function(d){var tx=d.transaction(s,'readwrite');tx.o
 
 // ── Variables globales ────────────────────────────────────────────────────
 var curPJ=null, curVR=null, curBC=null, selP=null, curDT='bim';
+var selMs=new Set(); // multi-selección de partidas
 var nvF=null;
 var xv=null, xModel=null;
 var g2asm={}, asm2g={}, vsHl=[], vsGhost=false;
@@ -1012,7 +1071,8 @@ function loadProj(id){
 // ── VISOR ─────────────────────────────────────────────────────────────────
 function openVer(vid){
   curVR=vid;
-  curBC=null; selP=null;
+  curBC=null; selP=null; selMs.clear();
+  vsPColor=false; var bpc=el('bn-pcolor'); if(bpc)bpc.classList.remove('a');
   // Reset 3D
   if(xModel){try{xModel.destroy();}catch(e){}xModel=null;}
   g2asm={}; asm2g={}; vsHl=[];
@@ -1157,6 +1217,35 @@ function pT(BC,s){
   if(txt)BC.t[code]=txt;
 }
 
+// ── COLORES POR PARTIDA ──────────────────────────────────────────────────
+var PART_PALETTE=[
+  [0.90,0.30,0.25],[0.20,0.55,0.90],[0.30,0.75,0.40],[0.95,0.65,0.15],
+  [0.60,0.35,0.85],[0.10,0.75,0.75],[0.95,0.45,0.65],[0.55,0.65,0.20],
+  [0.90,0.50,0.30],[0.35,0.45,0.85],[0.25,0.70,0.55],[0.85,0.75,0.25],
+  [0.75,0.30,0.55],[0.30,0.65,0.85],[0.65,0.80,0.35],[0.90,0.35,0.40],
+  [0.45,0.55,0.95],[0.20,0.80,0.60],[0.95,0.55,0.20],[0.70,0.45,0.75],
+  [0.40,0.75,0.80],[0.85,0.60,0.45],[0.50,0.70,0.30],[0.80,0.40,0.70]
+];
+function partColorIdx(code,BC){
+  if(!BC._partColorMap){
+    BC._partColorMap={};
+    var i=0;
+    Object.keys(BC.g).sort().forEach(function(p){
+      if((BC.g[p]||[]).length>0){BC._partColorMap[p]=i%PART_PALETTE.length;i++;}
+    });
+  }
+  return BC._partColorMap[code];
+}
+function partColor(code,BC){
+  var idx=partColorIdx(code,BC);
+  return idx===undefined?null:PART_PALETTE[idx];
+}
+function partColorHex(code,BC){
+  var c=partColor(code,BC);
+  if(!c)return null;
+  return '#'+c.map(function(v){return('0'+Math.round(v*255).toString(16)).slice(-2);}).join('');
+}
+
 function renderTree(){
   if(!curBC)return;
   var BC=curBC;
@@ -1203,16 +1292,54 @@ function renderTree(){
     var showCode=BC._showCodes&&code&&!(c.desc||'').toLowerCase().startsWith(code.toLowerCase());
     lbl.textContent=(showCode?(code+' | '):'')+( c.desc||code);
     lbl.title=code+': '+(c.desc||'');
-    // Precio
-    var ta=document.createElement('div');ta.className='ta';
-    if(!hk&&c.pr)ta.textContent=fmt(c.pr)+'€';
-    // BIM dot
-    if(hb){var bd=document.createElement('div');bd.className='tbim';}
     row.appendChild(tog);row.appendChild(badge);row.appendChild(lbl);
-    row.appendChild(ta);if(hb)row.appendChild(bd);
+    // Dot de color de partida (solo partidas con vínculos BIM)
+    if(hb&&!hk){
+      var hex=partColorHex(code,BC);
+      if(hex){
+        var dot=document.createElement('div');
+        dot.className='tn-pcolor';
+        dot.style.cssText='flex-shrink:0;width:8px;height:8px;border-radius:2px;margin-right:5px;background:'+hex+';';
+        dot.title='Color de partida';
+        row.appendChild(dot);
+      }
+    }
     // Children
     var cw=document.createElement('div');cw.className='tc';
     kids.forEach(function(k){cw.appendChild(mkN(k,dep+1));});
+    // Checkbox custom — div totalmente controlado, no depende de CSS externo
+    var cb=document.createElement('div');
+    cb.className='tn-cb';
+    cb.dataset.checked='0';
+    cb.style.cssText='flex-shrink:0;width:14px;height:14px;min-width:14px;min-height:14px;border:1.5px solid #aaa;border-radius:3px;background:#fff;margin-left:auto;margin-right:6px;cursor:pointer;box-sizing:border-box;display:flex;align-items:center;justify-content:center;';
+    cb.title='Seleccionar';
+    row.appendChild(cb);
+    cb.addEventListener('click',function(e){
+      e.stopPropagation();
+      var checked=cb.dataset.checked==='1';
+      checked=!checked;
+      cb.dataset.checked=checked?'1':'0';
+      cb.style.background=checked?'var(--acc)':'#fff';
+      cb.style.borderColor=checked?'var(--acc)':'#aaa';
+      cb.innerHTML=checked?'<svg viewBox="0 0 10 10" style="width:9px;height:9px;fill:none;stroke:#fff;stroke-width:2"><polyline points="1.5,5 4,7.5 8.5,2"/></svg>':'';
+      // Indeterminate visual
+      if(!hk){
+        if(checked)selMs.add(code); else selMs.delete(code);
+      } else {
+        var leaves=getAllLeaves(code,BC);
+        leaves.forEach(function(lc){if(checked)selMs.add(lc); else selMs.delete(lc);});
+        // Actualizar hijos visualmente
+        row.parentElement&&row.parentElement.querySelector('.tc')&&
+        row.parentElement.querySelector('.tc').querySelectorAll('.tn-cb').forEach(function(cc){
+          cc.dataset.checked=checked?'1':'0';
+          cc.style.background=checked?'var(--acc)':'#fff';
+          cc.style.borderColor=checked?'var(--acc)':'#aaa';
+          cc.innerHTML=checked?'<svg viewBox="0 0 10 10" style="width:9px;height:9px;fill:none;stroke:#fff;stroke-width:2"><polyline points="1.5,5 4,7.5 8.5,2"/></svg>':'';
+        });
+      }
+      updateMsBar();
+      updateParentCb(row);
+    });
     // Click
     row.addEventListener('click',function(e){
       e.stopPropagation();
@@ -1253,6 +1380,82 @@ function renderTree(){
   if(el('sp'))el('sp').textContent=cnt.p;
   if(el('sbim'))el('sbim').textContent=cnt.b;
   if(el('stb'))el('stb').style.display='flex';
+}
+
+// ── MULTI-SELECCIÓN ───────────────────────────────────────────────────────
+function getAllLeaves(code,BC){
+  var leaves=[];
+  (function walk(c){
+    var kids=BC.h[c]||[];
+    if(kids.length===0){leaves.push(c);}
+    else{kids.forEach(walk);}
+  })(code);
+  return leaves;
+}
+
+function updateParentCb(row){
+  var wrap=row.parentElement;
+  var parentTc=wrap?wrap.parentElement:null;
+  if(!parentTc||!parentTc.classList.contains('tc'))return;
+  var parentWrap=parentTc.parentElement;
+  if(!parentWrap)return;
+  var parentRow=parentWrap.querySelector(':scope>.tn');
+  if(!parentRow)return;
+  var parentCb=parentRow.querySelector(':scope>.tn-cb');
+  if(!parentCb)return;
+  var allCbs=parentTc.querySelectorAll('.tn-cb');
+  var checked=0,total=allCbs.length;
+  allCbs.forEach(function(c){if(c.dataset.checked==='1')checked++;});
+  if(checked===0){
+    parentCb.dataset.checked='0';parentCb.style.background='#fff';parentCb.style.borderColor='#aaa';
+    parentCb.innerHTML='';
+  } else if(checked===total){
+    parentCb.dataset.checked='1';parentCb.style.background='var(--acc)';parentCb.style.borderColor='var(--acc)';
+    parentCb.innerHTML='<svg viewBox="0 0 10 10" style="width:9px;height:9px;fill:none;stroke:#fff;stroke-width:2"><polyline points="1.5,5 4,7.5 8.5,2"/></svg>';
+  } else {
+    parentCb.dataset.checked='0';parentCb.style.background='var(--acc)';parentCb.style.borderColor='var(--acc)';
+    parentCb.innerHTML='<svg viewBox="0 0 10 10" style="width:6px;height:6px;fill:#fff"><rect x="1" y="4" width="8" height="2"/></svg>';
+  }
+  updateParentCb(parentRow);
+}
+
+function updateMsBar(){
+  var n=selMs.size;
+  var bar=el('ms-bar');if(!bar)return;
+  if(n>0){
+    bar.classList.add('visible');
+    el('ms-cnt').textContent=n+' partida'+(n===1?'':'s')+' seleccionada'+(n===1?'':'s');
+  } else {
+    bar.classList.remove('visible');
+  }
+}
+
+function hlMulti(){
+  if(!xv||!xscene||!curBC)return;
+  clrHL();
+  var guids=new Set();
+  selMs.forEach(function(code){
+    (curBC.g[code]||[]).forEach(function(e){
+      if(e.type==='asm')(asm2g[e.asmCode]||[]).forEach(function(g){guids.add(g);});
+      else if(e.ifc22)guids.add(e.ifc22);
+    });
+  });
+  if(!guids.size)return;
+  var found=[];
+  guids.forEach(function(g){var o=xscene.objects[g];if(o){o.selected=true;found.push(g);}});
+  vsHl=found;
+  if(!found.length)return;
+  var minX=Infinity,minY=Infinity,minZ=Infinity,maxX=-Infinity,maxY=-Infinity,maxZ=-Infinity;
+  found.forEach(function(id){
+    var a=(xscene.objects[id]||{}).aabb;if(!a||a.length<6)return;
+    if(a[0]<minX)minX=a[0];if(a[1]<minY)minY=a[1];if(a[2]<minZ)minZ=a[2];
+    if(a[3]>maxX)maxX=a[3];if(a[4]>maxY)maxY=a[4];if(a[5]>maxZ)maxZ=a[5];
+  });
+  if(!isFinite(minX))return;
+  var size=Math.max(maxX-minX,maxY-minY,maxZ-minZ);
+  var modelSize=Math.max(xscene.aabb[3]-xscene.aabb[0],xscene.aabb[4]-xscene.aabb[1],xscene.aabb[5]-xscene.aabb[2])||1;
+  var fit=Math.min(1.3,Math.max(0.85,(size/modelSize)*1.2+0.75));
+  xv.cameraFlight.flyTo({aabb:[minX,minY,minZ,maxX,maxY,maxZ],fitFactor:fit,duration:0.9});
 }
 
 function filterTree(q){
@@ -1380,10 +1583,10 @@ function rBIM(){
       if(gg.type==='asm'){
         var guids=asm2g[gg.asmCode]||[];
         hlGuids(guids);
-        showHC(gg.esp||gg.asmCode,selP,guids.length+' elementos');
+        showHC(gg.esp||gg.asmCode,selP,gg.esp);
       } else if(gg.ifc22){
         hlGuids([gg.ifc22]);
-        showHC(gg.esp,selP,gg.ifc22);
+        showHC(gg.esp,selP,gg.esp);
       }
     });})(g);
   });
@@ -1393,14 +1596,24 @@ function rMED(){
   var d=el('dc');if(!selP||!curBC){d.innerHTML='<div class="ed"><p>Selecciona una partida</p></div>';return;}
   var ms=curBC.m[selP]||[];
   if(!ms.length){d.innerHTML='<div style="padding:12px;color:var(--muted);font-size:12px;">Sin mediciones</div>';return;}
+  // Recuento de líneas + comparación con elementos BIM
+  var nBim=0;
+  (curBC.g[selP]||[]).forEach(function(e){
+    if(e.type==='asm')nBim+=(asm2g[e.asmCode]||[]).length;
+    else if(e.ifc22)nBim++;
+  });
+  var match=(ms.length===nBim);
   var tot=0;
-  var h='<table class="mt"><thead><tr><th>Descripción</th><th class="nr">N</th><th class="nr">L</th><th class="nr">A</th><th class="nr">H</th><th class="nr">Cant.</th></tr></thead><tbody>';
+  var h='<div style="padding:10px 12px 6px;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;">Líneas de medición ('+ms.length+')'
+    +(nBim?' <span style="color:'+(match?'var(--ok)':'#e67e22')+';font-weight:600;text-transform:none;"> · '+nBim+' elem. en modelo'+(match?'':' ⚠')+'</span>':'')
+    +'</div>';
+  h+='<table class="mt"<thead><tr><th>Descripción</th><th class="nr">N</th><th class="nr">L</th><th class="nr">A</th><th class="nr">H</th><th class="nr">Cant.</th></tr></thead><tbody>';
   ms.forEach(function(m){
     var parc=m.parc!=null?m.parc:(m.nd&&m.a?m.nd*m.a:m.a||0);
     tot+=parc;
-    h+='<tr><td>'+esc(m.txt||'—')+'</td><td class="nr">'+(m.nd||'')+'</td><td class="nr">'+(m.a||'')+'</td><td class="nr">'+(m.b||'')+'</td><td class="nr">'+(m.h||'')+'</td><td class="nr">'+(parc?parc.toFixed(3):'')+'</td></tr>';
+    h+='<tr><td>'+esc(m.txt||'—')+'</td><td class="nr">'+(m.nd||'')+'</td><td class="nr">'+(m.a||'')+'</td><td class="nr">'+(m.b||'')+'</td><td class="nr">'+(m.h||'')+'</td><td class="nr">'+(parc?parc.toFixed(2):'')+'</td></tr>';
   });
-  h+='<tr class="tf"><td>Total</td><td></td><td></td><td></td><td></td><td class="nr">'+tot.toFixed(3)+'</td></tr>';
+  h+='<tr class="tf"><td>Total</td><td></td><td></td><td></td><td></td><td class="nr">'+tot.toFixed(2)+'</td></tr>';
   h+='</tbody></table>';
   d.innerHTML=h;
 }
@@ -1464,6 +1677,9 @@ async function initXeokit(){
       });
     }
     xscene=xv.scene;
+    _sbInitCanvasEvents();
+    // Material fantasma: gris claro, 10% opacidad
+    _updateXrayTheme();
     xv.cameraControl.navMode='orbit';
     xv.cameraControl.followPointer=true;
     xv.cameraControl.doublePickFlyTo=true;
@@ -1475,13 +1691,13 @@ async function initXeokit(){
     // ── Pick handler: mouse + touch ────────────────────────────────
     function handlePick(canvasPos){
       if(!xv||!xscene)return;
-      // Modo sección por cara: interceptar clic
-      if(typeof _sectionPickMode!=='undefined'&&_sectionPickMode){
-        applySectionFromPick(canvasPos);return;
-      }
+      // La caja de sección tiene prioridad (alinear / seleccionar cara) — clave para táctil
+      if(typeof _sbHandleCanvasTap==='function'&&_sbHandleCanvasTap(canvasPos))return;
       var hit=xv.scene.pick({canvasPos:canvasPos});
       if(!hit||!hit.entity)return;
       var entityId=hit.entity.id;
+      // Ignorar meshes de la caja de sección (los gestiona _sbInitCanvasEvents)
+      if(entityId&&(entityId.indexOf('sb_face_')===0||entityId==='sb_wire'))return;
 
       xscene.setObjectsSelected(xscene.selectedObjectIds,false);
       hit.entity.selected=true;
@@ -1546,7 +1762,15 @@ async function initXeokit(){
           });
         },50);
       }
-      showHC(name,fp,asmCode||entityId.slice(0,12));
+      var matchEsp=null;
+      if(fp&&curBC){
+        (curBC.g[fp]||[]).some(function(g){
+          if(g.type==='asm'&&asmCode&&(g.asmCode===asmCode||asmCode.indexOf(g.asmCode)===0)){matchEsp=g.esp;return true;}
+          if(g.type==='ifc22'&&g.ifc22===entityId){matchEsp=g.esp;return true;}
+          return false;
+        });
+      }
+      showHC(name,fp,matchEsp);
     }
 
     xv.scene.input.on('mouseclicked',function(coords){handlePick(coords);});
@@ -1622,8 +1846,7 @@ async function loadXkt(xktBuffer, metaJson){
       dtxEnabled: true,
       excludeUnclassifiedObjects: false,
       objectDefaults: {
-        // IfcSpace: habitaciones → transparentes
-        'IfcSpace':          { opacity: 0.1 },
+        'IfcSpace':          { visible: false, opacity: 0 },
         // Ventanas → semitransparentes
         'IfcWindow':         { opacity: 0.4 },
         // Barandillas y pasamanos
@@ -1657,7 +1880,7 @@ async function loadXkt(xktBuffer, metaJson){
       el('dz').classList.add('h');
       el('cv').style.display='block';
       // Rebuild types panel with actual model data
-      if(el('types-panel')&&el('types-panel').style.display!=='none'){
+      if(el('cats-panel')&&el('cats-panel').style.display!=='none'){
         buildTypesPanel();
       }
       // Resize canvas to fit parent
@@ -1668,6 +1891,8 @@ async function loadXkt(xktBuffer, metaJson){
       xv.scene.canvas.resolutionScale=1;
       setTimeout(function(){xv.cameraFlight.flyTo(xModel);},100);
       if(selP&&curBC)hlPart(selP,curBC);
+      // Ocultar IfcSpace siempre tras cargar
+      _hideIfcSpaces();
     });
     xModel.on('error',function(e){
       st3('Error cargando modelo: '+e,'');
@@ -1715,14 +1940,13 @@ function hlPart(code,BC){
   );
   // Ratio del grupo respecto al modelo total
   var ratio = size / (modelSize||1);
-  // fitFactor entre 0.5 (zoom in) y 0.8 (más alejado)
-  // Ratio pequeño → elementos pequeños → zoom más cercano
-  var fit = Math.min(0.8, Math.max(0.5, ratio * 1.2 + 0.25));
+  // fitFactor: más alejado para contexto
+  var fit = Math.min(1.3, Math.max(0.85, ratio * 1.2 + 0.75));
 
   xv.cameraFlight.flyTo({
     aabb: [minX,minY,minZ,maxX,maxY,maxZ],
     fitFactor: fit,
-    duration: 0.6
+    duration: 0.9
   });
 }
 
@@ -1744,7 +1968,7 @@ function hlGuids(guids){
   });
   // Si no hay AABB válido, usar flyTo con objectIds pero con fitFactor controlado
   if(!isFinite(minX)){
-    xv.cameraFlight.flyTo({objectIds:found,fitFactor:0.5,duration:0.5});
+    xv.cameraFlight.flyTo({objectIds:found,fitFactor:1.0,duration:0.9});
     return;
   }
   var size=Math.max(maxX-minX,maxY-minY,maxZ-minZ);
@@ -1753,8 +1977,8 @@ function hlGuids(guids){
     xscene.aabb[4]-xscene.aabb[1],
     xscene.aabb[5]-xscene.aabb[2]
   )||1;
-  var fit=Math.min(0.65,Math.max(0.25,(size/modelSize)*1.2+0.2));
-  xv.cameraFlight.flyTo({aabb:[minX,minY,minZ,maxX,maxY,maxZ],fitFactor:fit,duration:0.5});
+  var fit=Math.min(1.4,Math.max(0.9,(size/modelSize)*1.2+0.85));
+  xv.cameraFlight.flyTo({aabb:[minX,minY,minZ,maxX,maxY,maxZ],fitFactor:fit,duration:0.9});
 }
 
 function clrHL(){
@@ -1763,24 +1987,144 @@ function clrHL(){
   vsHl=[];
 }
 
-function showAll(){if(!xv||!xscene)return;xscene.setObjectsVisible(xscene.objectIds,true);}
+var _ifcSpaceIds=new Set();
+
+function _hideIfcSpaces(){
+  if(!xscene)return;
+  _ifcSpaceIds.clear();
+  typeVisibility['IfcSpace']=false;
+  if(xscene.metaScene){
+    Object.values(xscene.metaScene.metaObjects||{}).forEach(function(mo){
+      if(mo.type==='IfcSpace'){
+        var o=xscene.objects[mo.id];
+        if(o){o.visible=false;o.opacity=0;o.pickable=false;_ifcSpaceIds.add(mo.id);}
+      }
+    });
+  }
+  if(_ifcSpaceIds.size===0&&xscene.objects){
+    Object.keys(xscene.objects).forEach(function(id){
+      if(id.toLowerCase().includes('ifcspace')){
+        var o=xscene.objects[id];
+        if(o){o.visible=false;o.pickable=false;_ifcSpaceIds.add(id);}
+      }
+    });
+  }
+}
+
+// Safari (macOS e iOS) compone las líneas con más densidad → factor corrector
+var _isSafari=(function(){
+  var ua=navigator.userAgent;
+  var ios=/iPad|iPhone|iPod/.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+  var safariMac=/^((?!chrome|crios|fxios|android|edg).)*safari/i.test(ua);
+  return ios||safariMac;
+})();
+function _updateXrayTheme(){
+  if(!window.xv||!window.xv.scene)return;
+  var xm=window.xv.scene.xrayMaterial;
+  // Solo aristas en todas las plataformas (el relleno translúcido falla en WebKit)
+  xm.fill=false;
+  xm.edges=true;
+  if(window._dark){
+    xm.edgeColor=[0.85,0.87,0.90];
+    xm.edgeAlpha=_isSafari?0.12:0.33;
+  } else {
+    // Negro casi puro + alpha bajo: acumula como gris oscuro, no como blanco
+    xm.edgeColor=[0.05,0.05,0.06];
+    xm.edgeAlpha=_isSafari?0.20:0.18;
+  }
+}
+function showAll(){
+  if(!xv||!xscene)return;
+  xscene.setObjectsVisible(xscene.objectIds,true);
+  xscene.setObjectsXRayed(xscene.objectIds,false);
+  xscene.setObjectsPickable(xscene.objectIds,true);
+  // Mantener IfcSpace ocultos
+  _ifcSpaceIds.forEach(function(id){
+    var o=xscene.objects[id];if(o){o.visible=false;o.opacity=0;o.pickable=false;}
+  });
+}
+
+// Aisla los IDs visibles y pone el resto en modo fantasma
+function isoGhost(visibleIds){
+  if(!xv||!xscene||!visibleIds||!visibleIds.length)return;
+  // Al aislar, quitar el verde de selección — los aislados se ven con su color
+  xscene.setObjectsSelected(xscene.selectedObjectIds,false);
+  var visSet=new Set(visibleIds);
+  xscene.objectIds.forEach(function(id){
+    var o=xscene.objects[id];if(!o)return;
+    if(visSet.has(id)){o.xrayed=false;o.visible=true;o.pickable=true;}
+    else{o.visible=true;o.xrayed=true;o.pickable=false;}
+  });
+}
 
 function fitModel(){if(xv&&xModel)xv.cameraFlight.flyTo(xModel);}
+
+// ── COLOREAR POR PARTIDAS EN EL VISOR ────────────────────────────────────
+var vsPColor=false;
+
+function togglePartColors(){
+  if(!xv||!xscene||!curBC)return;
+  vsPColor=!vsPColor;
+  if(vsPColor){
+    Object.keys(curBC.g).forEach(function(code){
+      var col=partColor(code,curBC);
+      if(!col)return;
+      (curBC.g[code]||[]).forEach(function(e){
+        var guids=[];
+        if(e.type==='asm')guids=asm2g[e.asmCode]||[];
+        else if(e.ifc22)guids=[e.ifc22];
+        guids.forEach(function(g){
+          var o=xscene.objects[g];
+          if(o)o.colorize=col;
+        });
+      });
+    });
+  } else {
+    xscene.objectIds.forEach(function(id){
+      var o=xscene.objects[id];
+      if(o&&o.colorize)o.colorize=null;
+    });
+  }
+  el('bn-pcolor').classList.toggle('a',vsPColor);
+}
 
 function toggleGhost(){
   if(!xv||!xscene)return;
   vsGhost=!vsGhost;
   xscene.setObjectsXRayed(xscene.objectIds,vsGhost);
-  if(vsGhost&&vsHl.length>0)xscene.setObjectsXRayed(vsHl,false);
+  xscene.setObjectsPickable(xscene.objectIds,!vsGhost);
+  if(vsGhost&&vsHl.length>0){
+    xscene.setObjectsXRayed(vsHl,false);
+    xscene.setObjectsPickable(vsHl,true);
+  }
   el('bn-ghost').classList.toggle('a',vsGhost);
 }
 
-function showHC(name,partida,extra){
+function showHC(name,partida,esp){
   var hc=el('hc');if(!hc)return;
-  // Mostrar solo código de partida + descripción corta
-  var desc='';
-  if(partida&&curBC&&curBC.c[partida])desc=curBC.c[partida].desc||'';
-  el('hct').textContent=(partida||name||'—')+(desc?' · '+desc:'');
+  var txt=name||'—';
+  if(partida&&curBC&&curBC.c[partida]){
+    var ud=(curBC.c[partida]||{}).ud||'';
+    // Cruzar con la línea de medición del elemento → parcial
+    var parc=null;
+    if(esp&&curBC.m&&curBC.m[partida]){
+      var ms=curBC.m[partida];
+      for(var i=0;i<ms.length;i++){
+        var t=ms[i].txt||'';
+        if(t===esp||(t&&esp&&(t.indexOf(esp)===0||esp.indexOf(t)===0))){
+          parc=ms[i].parc!=null?ms[i].parc:(ms[i].nd&&ms[i].a?ms[i].nd*ms[i].a:ms[i].a||0);
+          break;
+        }
+      }
+    }
+    var qtyHtml=(parc!=null&&parc)?' <span style="color:var(--acc);font-weight:700;">'+fmt(parc,2)+(ud?' '+esc(ud):'')+'</span>':'';
+    el('hct').innerHTML=esc(partida)+qtyHtml;
+    if(el('hcp'))el('hcp').textContent='';
+    hc.style.display='block';
+    clearTimeout(hc._t);hc._t=setTimeout(function(){hc.style.display='none';},4000);
+    return;
+  }
+  el('hct').textContent=txt;
   if(el('hcp'))el('hcp').textContent='';
   hc.style.display='block';
   clearTimeout(hc._t);hc._t=setTimeout(function(){hc.style.display='none';},4000);
@@ -1962,9 +2306,9 @@ async function applyMetaFile(file){
         }
       });
 
-      // Apply objectDefaults (spaces transparent etc)
+      // Apply objectDefaults
       var OBJ_DEFAULTS={
-        'IfcSpace':0.05,'IfcWindow':0.4,'IfcPlate':0.3,
+        'IfcWindow':0.4,'IfcPlate':0.3,
         'IfcRailing':0.7,'IfcOpeningElement':0
       };
       (metaJson.metaObjects||metaJson.objects||[]).forEach(function(o){
@@ -1977,10 +2321,12 @@ async function applyMetaFile(file){
           }
         }
       });
+      // Ocultar IfcSpace siempre (metadatos ya cargados, ahora es fiable)
+      _hideIfcSpaces();
 
       st3('Metadatos aplicados: '+n+' elementos','ok');
       // Rebuild categories panel if open
-      if(el('types-panel')&&el('types-panel').style.display!=='none')buildTypesPanel();
+      if(el('cats-panel')&&el('cats-panel').style.display!=='none')buildTypesPanel();
     } else {
       st3('Carga el XKT primero','');
     }
@@ -1991,203 +2337,321 @@ async function applyMetaFile(file){
 }
 
 
-
 // ── SECCIÓN, PLANTAS Y MEDICIÓN ─────────────────────────────────────────
-var xSection=null, xSectionPlugin=null, xMeasurePlugin=null;
-var _sliceDir=[0,-1,0], _sliceMin=0, _sliceMax=1;
-var _sectionPickMode=false;
+var xSection=null, xSectionPlugin=null;
+// ── CAJA DE SECCIÓN FÍSICA (optimizada: geometría creada 1 vez) ──────────
+var _sb={
+  active:false,
+  planes:{xmin:null,xmax:null,ymin:null,ymax:null,zmin:null,zmax:null},
+  meshWire:null, meshFaces:[],
+  box:null,   // AABB base (fijo durante la sesión)
+  cur:null,   // coordenadas actuales de cada cara (local, sin rotar)
+  rot:{x:0,y:0,z:0}
+};
+var _sbHoverFace=null, _sbSelFace=null;
+var _SB_OPP={xmin:'xmax',xmax:'xmin',ymin:'ymax',ymax:'ymin',zmin:'zmax',zmax:'zmin'};
+var _SB_NLOCAL={xmin:[-1,0,0],xmax:[1,0,0],ymin:[0,-1,0],ymax:[0,1,0],zmin:[0,0,-1],zmax:[0,0,1]};
 
 function initSectionPlugin(){
-  if(xSectionPlugin) return;
+  if(xSectionPlugin)return;
   var XK=window._XK;
-  if(!XK||!XK.SectionPlanesPlugin) return;
+  if(!XK||!XK.SectionPlanesPlugin)return;
   xSectionPlugin=new XK.SectionPlanesPlugin(xv,{overviewCanvasId:null,overviewVisible:false});
 }
 
-function toggleSlice(){
-  if(!xv||!xscene) return;
-  initSectionPlugin();
-  if(!xSectionPlugin) return;
-  var panel=el('slice-panel');
-  if(xSection){
-    xSectionPlugin.destroySectionPlane('sec1');
-    xSection=null;
-    panel.style.display='none';
-    el('bn-slice').classList.remove('a');
-    el('bn-slice-elem').classList.remove('a');
-  } else {
-    _sliceDir=[0,-1,0];
-    var aabb=xscene.aabb;
-    var cx=(aabb[0]+aabb[3])/2, cz=(aabb[2]+aabb[5])/2;
-    var y=aabb[1]+(aabb[4]-aabb[1])*0.7;
-    _sliceMin=aabb[1]; _sliceMax=aabb[4];
-    xSection=xSectionPlugin.createSectionPlane({id:'sec1',pos:[cx,y,cz],dir:[0,-1,0]});
-    el('slice-slider').value=70;
-    el('slice-val').textContent='70%';
-    if(el('slice-title'))el('slice-title').textContent='Sección horizontal';
-    panel.style.display='block';
-    el('bn-slice').classList.add('a');
-    el('bn-slice-elem').classList.remove('a');
+function sbOpen(){
+  if(!xv||!xscene)return;
+  initSectionPlugin();if(!xSectionPlugin)return;
+  if(_sb.active)sbClose();
+  var aabb=xModel?xModel.aabb:xscene.aabb;
+  _sb.box={xmin:aabb[0],xmax:aabb[3],ymin:aabb[1],ymax:aabb[4],zmin:aabb[2],zmax:aabb[5]};
+  _sb.rot={x:0,y:0,z:0};
+  var saved=_sbLoadPos();
+  if(saved&&saved.cur){_sb.cur=saved.cur;_sb.rot=saved.rot||{x:0,y:0,z:0};if(saved.box)_sb.box=saved.box;}
+  else _sb.cur=Object.assign({},_sb.box);
+  _sbCreateSceneObjects();
+  _sbApply();
+  _sb.active=true;
+  el('secbox-panel').style.display='block';
+  el('bn-secbox').classList.add('a');
+  var btnH=el('sb-hide');
+  if(btnH){
+    btnH.dataset.boxVisible='1';
+    var txt=btnH.childNodes[btnH.childNodes.length-1];
+    if(txt&&txt.nodeType===3)txt.textContent=' Ocultar';
   }
+  _sbSyncRotSliders();
+  setTimeout(function(){_sbSelectFace('ymax');},50);
 }
 
-function sectionByElement(){
-  if(!xv||!xscene) return;
-  initSectionPlugin();
-  if(!xSectionPlugin) return;
-  if(_sectionPickMode){
-    _sectionPickMode=false;
-    el('bn-slice-elem').classList.remove('a');
-    st3('',''); return;
-  }
-  _sectionPickMode=true;
-  el('bn-slice-elem').classList.add('a');
-  st3('Haz clic en la cara del elemento para crear la sección','sp');
-}
-
-function applySectionFromPick(canvasPos){
-  _sectionPickMode=false;
-  el('bn-slice-elem').classList.remove('a');
-  var hit=xv.scene.pick({canvasPos:canvasPos,pickSurface:true});
-  if(!hit||!hit.entity){st3('No se detectó superficie','');return;}
-  var n=hit.worldNormal;
-  if(!n||(n[0]===0&&n[1]===0&&n[2]===0)){applySectionFromAABB(hit.entity);return;}
-  var len=Math.sqrt(n[0]*n[0]+n[1]*n[1]+n[2]*n[2]);
-  if(len<0.0001){applySectionFromAABB(hit.entity);return;}
-  var dir=[n[0]/len,n[1]/len,n[2]/len];
-  _sliceDir=dir;
-  var pos=hit.worldPos||[(hit.entity.aabb[0]+hit.entity.aabb[3])/2,
-    (hit.entity.aabb[1]+hit.entity.aabb[4])/2,(hit.entity.aabb[2]+hit.entity.aabb[5])/2];
-  var maabb=xscene.aabb;
-  var corners=[[maabb[0],maabb[1],maabb[2]],[maabb[3],maabb[1],maabb[2]],
-    [maabb[0],maabb[4],maabb[2]],[maabb[3],maabb[4],maabb[2]],
-    [maabb[0],maabb[1],maabb[5]],[maabb[3],maabb[1],maabb[5]],
-    [maabb[0],maabb[4],maabb[5]],[maabb[3],maabb[4],maabb[5]]];
-  var projs=corners.map(function(v){return v[0]*dir[0]+v[1]*dir[1]+v[2]*dir[2];});
-  _sliceMin=Math.min.apply(null,projs);
-  _sliceMax=Math.max.apply(null,projs);
-  var curProj=pos[0]*dir[0]+pos[1]*dir[1]+pos[2]*dir[2];
-  var pct=Math.round(Math.max(0,Math.min(100,(curProj-_sliceMin)/(_sliceMax-_sliceMin)*100)));
-  if(xSection)xSectionPlugin.destroySectionPlane('sec1');
-  xSection=xSectionPlugin.createSectionPlane({id:'sec1',pos:pos,dir:dir});
-  el('slice-slider').value=pct;
-  el('slice-val').textContent=pct+'%';
-  var dirName=Math.abs(dir[1])>0.7?'horizontal':'vertical';
-  if(el('slice-title'))el('slice-title').textContent='Sección '+dirName;
-  el('slice-panel').style.display='block';
-  el('bn-slice').classList.remove('a');
-  st3('Plano paralelo a la cara · slider para mover','ok');
-}
-
-function applySectionFromAABB(obj){
-  if(!obj||!obj.aabb) return;
-  var aabb=obj.aabb;
-  var sx=aabb[3]-aabb[0],sy=aabb[4]-aabb[1],sz=aabb[5]-aabb[2];
-  var dir;
-  if(sy<=sx&&sy<=sz)dir=[0,-1,0];
-  else if(sx<=sy&&sx<=sz)dir=[-1,0,0];
-  else dir=[0,0,-1];
-  _sliceDir=dir;
-  var cx=(aabb[0]+aabb[3])/2,cy=(aabb[1]+aabb[4])/2,cz=(aabb[2]+aabb[5])/2;
-  var maabb=xscene.aabb;
-  var axis=Math.abs(dir[0])>0.5?0:(Math.abs(dir[1])>0.5?1:2);
-  _sliceMin=[maabb[0],maabb[1],maabb[2]][axis];
-  _sliceMax=[maabb[3],maabb[4],maabb[5]][axis];
-  var pct=Math.round(Math.max(0,Math.min(100,([cx,cy,cz][axis]-_sliceMin)/(_sliceMax-_sliceMin)*100)));
-  if(xSection)xSectionPlugin.destroySectionPlane('sec1');
-  xSection=xSectionPlugin.createSectionPlane({id:'sec1',pos:[cx,cy,cz],dir:dir});
-  el('slice-slider').value=pct;
-  el('slice-val').textContent=pct+'%';
-  el('slice-panel').style.display='block';
-}
-
-function updateSlice(pct){
-  if(!xSection||!xscene) return;
-  var t=pct/100,dir=_sliceDir;
-  var aabb=xscene.aabb;
-  var cx=(aabb[0]+aabb[3])/2,cy=(aabb[1]+aabb[4])/2,cz=(aabb[2]+aabb[5])/2;
-  var d=_sliceMin+(_sliceMax-_sliceMin)*t;
-  var dot=cx*dir[0]+cy*dir[1]+cz*dir[2];
-  xSection.pos=[cx+dir[0]*(d-dot),cy+dir[1]*(d-dot),cz+dir[2]*(d-dot)];
-  el('slice-val').textContent=pct+'%';
-}
-
-function buildStoreysPanel(){
-  if(!xv||!xscene) return;
-  var list=el('storeys-list');if(!list)return;
-  var storeys=[];
-  var src=_metaJson?(_metaJson.objects||_metaJson.metaObjects||[]):[];
-  if(xscene.metaScene)
-    Object.values(xscene.metaScene.metaObjects||{}).forEach(function(mo){
-      if(mo.type==='IfcBuildingStorey')storeys.push({id:mo.id,name:mo.name||'Planta'});
-    });
-  if(!storeys.length)
-    src.forEach(function(o){if(o.type==='IfcBuildingStorey')storeys.push({id:o.id,name:o.name||'Planta'});});
-  if(!storeys.length){
-    var aabb=xscene.aabb,h=aabb[4]-aabb[1],nF=Math.max(1,Math.round(h/3));
-    for(var i=0;i<nF;i++)storeys.push({id:'floor_'+i,name:'Planta '+(i===0?'Baja':i),pct:Math.round((i+0.5)/nF*100)});
-  }
-  list.innerHTML='';
-  var allRow=document.createElement('div');
-  allRow.style.cssText='padding:8px 12px;cursor:pointer;font-size:11px;font-weight:600;color:#374151;border-bottom:1px solid #f3f4f6;';
-  allRow.textContent='Todas las plantas';
-  allRow.addEventListener('click',function(){
-    showAll();
-    if(xSection&&xSectionPlugin){xSectionPlugin.destroySectionPlane('sec1');xSection=null;el('bn-slice').classList.remove('a');el('slice-panel').style.display='none';}
-    if(xModel)xv.cameraFlight.flyTo(xModel,{duration:0.5});
+function sbClose(){
+  if(_sb.active&&_sb.box&&_sb.cur){try{_sbSavePos();}catch(e){}}
+  var cv0=el('cv');if(cv0)cv0.style.cursor='';
+  Object.keys(_sb.planes).forEach(function(k){
+    if(_sb.planes[k]){try{xSectionPlugin.destroySectionPlane('sb_'+k);}catch(e){}}_sb.planes[k]=null;
   });
-  list.appendChild(allRow);
-  storeys.forEach(function(s){
-    var row=document.createElement('div');
-    row.style.cssText='padding:7px 12px;cursor:pointer;font-size:11px;color:#374151;display:flex;align-items:center;';
-    row.innerHTML='<span style="flex:1">'+s.name+'</span>';
-    row.addEventListener('click',function(){
-      initSectionPlugin();
-      if(xSection)xSectionPlugin.destroySectionPlane('sec1');
-      var aabb=xscene.aabb,pct=(s.pct||50)/100;
-      var y=aabb[1]+(aabb[4]-aabb[1])*(pct+0.08);
-      _sliceDir=[0,-1,0];_sliceMin=aabb[1];_sliceMax=aabb[4];
-      xSection=xSectionPlugin.createSectionPlane({id:'sec1',pos:[(aabb[0]+aabb[3])/2,y,(aabb[2]+aabb[5])/2],dir:[0,-1,0]});
-      var sp=Math.round((pct+0.08)*100);
-      el('slice-slider').value=sp;el('slice-val').textContent=sp+'%';
-      if(el('slice-title'))el('slice-title').textContent='Planta: '+s.name;
-      el('slice-panel').style.display='block';el('bn-slice').classList.add('a');
-    });
-    list.appendChild(row);
+  if(_sb.meshWire){try{_sb.meshWire.destroy();}catch(e){}}_sb.meshWire=null;
+  _sb.meshFaces.forEach(function(m){try{m.destroy();}catch(e){}});
+  _sb.meshFaces=[];
+  _sbSelFace=null;_sbHoverFace=null;
+  if(typeof _sbSetAlignMode==='function')_sbSetAlignMode(false);
+  _sb.active=false;
+  el('secbox-panel').style.display='none';
+  el('bn-secbox').classList.remove('a');
+}
+
+// Crea los 6 planos + wireframe + 6 caras UNA VEZ con geometría unitaria
+function _sbCreateSceneObjects(){
+  var XK=window._XK;if(!XK)return;
+  // Limpiar restos
+  Object.keys(_sb.planes).forEach(function(k){
+    if(_sb.planes[k]){try{xSectionPlugin.destroySectionPlane('sb_'+k);}catch(e){}}_sb.planes[k]=null;
+  });
+  if(_sb.meshWire){try{_sb.meshWire.destroy();}catch(e){}}_sb.meshWire=null;
+  _sb.meshFaces.forEach(function(m){try{m.destroy();}catch(e){}});_sb.meshFaces=[];
+
+  // 6 planos de sección (pos/dir se actualizan en _sbApply)
+  Object.keys(_SB_NLOCAL).forEach(function(k){
+    _sb.planes[k]=xSectionPlugin.createSectionPlane({id:'sb_'+k,pos:[0,0,0],dir:[0,1,0]});
+  });
+
+  if(!(XK.VBOGeometry&&XK.Mesh&&XK.PhongMaterial))return;
+
+  // Wireframe: cubo unitario centrado en origen (escala/posición vía transform)
+  try{
+    var v=0.5;
+    var verts=[-v,-v,-v, v,-v,-v, v,-v,v, -v,-v,v, -v,v,-v, v,v,-v, v,v,v, -v,v,v];
+    var edges=[0,1,1,2,2,3,3,0, 4,5,5,6,6,7,7,4, 0,4,1,5,2,6,3,7];
+    var wg=new XK.VBOGeometry(xscene,{primitive:'lines',positions:verts,indices:edges});
+    var wm=new XK.PhongMaterial(xscene,{emissive:[0.2,0.6,1],lineWidth:2});
+    _sb.meshWire=new XK.Mesh(xscene,{id:'sb_wire',geometry:wg,material:wm,pickable:false,collidable:false,clippable:false});
+  }catch(e){console.warn('[SB] wire:',e);}
+
+  // 6 caras del cubo unitario — comparten transform con el wireframe
+  var faceVerts={
+    xmin:[-v,-v,-v, -v,-v,v, -v,v,v, -v,v,-v],
+    xmax:[ v,-v,-v,  v,v,-v,  v,v,v,  v,-v,v],
+    ymin:[-v,-v,-v,  v,-v,-v, v,-v,v, -v,-v,v],
+    ymax:[-v,v,-v,  -v,v,v,   v,v,v,   v,v,-v],
+    zmin:[-v,-v,-v, -v,v,-v,  v,v,-v,  v,-v,-v],
+    zmax:[-v,-v,v,   v,-v,v,  v,v,v,  -v,v,v]
+  };
+  Object.keys(faceVerts).forEach(function(k){
+    try{
+      var n=_SB_NLOCAL[k];
+      var ns=[].concat(n,n,n,n);
+      var g=new XK.VBOGeometry(xscene,{primitive:'triangles',positions:faceVerts[k],indices:[0,1,2,0,2,3],normals:ns});
+      var m2=new XK.PhongMaterial(xscene,{diffuse:[0.3,0.6,1],alpha:0.08,backfaces:true});
+      var mesh=new XK.Mesh(xscene,{id:'sb_face_'+k,geometry:g,material:m2,pickable:true,collidable:false,clippable:false});
+      _sb.meshFaces.push(mesh);
+    }catch(e){console.warn('[SB] face:',e);}
   });
 }
 
-function toggleMeasure(){
-  if(!xv) return;
-  var XK=window._XK;
-  if(!XK||!XK.DistanceMeasurementsPlugin){st3('Medición no disponible','');return;}
-  var active=el('bn-measure').classList.contains('a');
-  if(active){
-    if(xMeasurePlugin){
-      if(xMeasurePlugin._mouseCtrl)xMeasurePlugin._mouseCtrl.deactivate();
-      if(xMeasurePlugin._touchCtrl)xMeasurePlugin._touchCtrl.deactivate();
-      xMeasurePlugin.clear();
+// Aplica el estado actual (cur + rot) a meshes y planos — SIN crear geometría
+function _sbApply(){
+  if(!_sb.box||!_sb.cur)return;
+  var b=_sb.box,c=_sb.cur;
+  var ry=(_sb.rot.y||0)*Math.PI/180;
+  var cy=Math.cos(ry),sy=Math.sin(ry);
+  // Pivote de rotación: centro del box base
+  var pv=[(b.xmin+b.xmax)/2,(b.ymin+b.ymax)/2,(b.zmin+b.zmax)/2];
+  function l2w(p){
+    var dx=p[0]-pv[0],dz=p[2]-pv[2];
+    return[pv[0]+dx*cy+dz*sy, p[1], pv[2]-dx*sy+dz*cy];
+  }
+  function rotV(nv){return[nv[0]*cy+nv[2]*sy, nv[1], -nv[0]*sy+nv[2]*cy];}
+
+  var sx=c.xmax-c.xmin, syy=c.ymax-c.ymin, sz=c.zmax-c.zmin;
+  var lc=[(c.xmin+c.xmax)/2,(c.ymin+c.ymax)/2,(c.zmin+c.zmax)/2];
+  var wc=l2w(lc);
+  var rotDeg=[0,(_sb.rot.y||0),0];
+
+  // Actualizar meshes (transform in-place — barato)
+  if(_sb.meshWire){
+    _sb.meshWire.position=wc;
+    _sb.meshWire.scale=[sx,syy,sz];
+    _sb.meshWire.rotation=rotDeg;
+  }
+  _sb.meshFaces.forEach(function(m){
+    m.position=wc;
+    m.scale=[sx,syy,sz];
+    m.rotation=rotDeg;
+  });
+
+  // Actualizar planos (pos/dir in-place) + activar solo los necesarios
+  var rotActive=Math.abs(_sb.rot.y||0)>0.01;
+  Object.keys(_SB_NLOCAL).forEach(function(k){
+    var plane=_sb.planes[k];if(!plane)return;
+    var axis=k.charAt(0);
+    var faceCtr;
+    if(axis==='x')faceCtr=[c[k],lc[1],lc[2]];
+    else if(axis==='y')faceCtr=[lc[0],c[k],lc[2]];
+    else faceCtr=[lc[0],lc[1],c[k]];
+    plane.pos=l2w(faceCtr);
+    var nW=rotV(_SB_NLOCAL[k]);
+    plane.dir=[-nW[0],-nW[1],-nW[2]]; // hacia el interior
+    var moved=Math.abs(c[k]-b[k])>0.001;
+    plane.active=moved||rotActive;
+  });
+}
+var sbUpdate=_sbApply; // compatibilidad
+
+function _sbSetFaceHighlight(faceId,on){
+  _sb.meshFaces.forEach(function(m){
+    // Limpiar selected nativo de xeokit si quedó marcado
+    if(m.selected)m.selected=false;
+    if(on&&m.id!=='sb_face_'+faceId){m.material.diffuse=[0.3,0.6,1];m.material.alpha=0.08;}
+    if(m.id==='sb_face_'+faceId){
+      m.material.diffuse=on?[0.16,0.45,0.94]:[0.3,0.6,1]; // azul interfaz
+      m.material.alpha=on?0.3:0.08;
     }
-    el('bn-measure').classList.remove('a');st3('','');
-  } else {
-    if(!xMeasurePlugin){
-      xMeasurePlugin=new XK.DistanceMeasurementsPlugin(xv);
-      if(XK.DistanceMeasurementsMouseControl){
-        xMeasurePlugin._mouseCtrl=new XK.DistanceMeasurementsMouseControl(xMeasurePlugin,{pointerLens:null});
-        xMeasurePlugin._mouseCtrl.activate();
-      }
-      if(XK.DistanceMeasurementsTouchControl){
-        xMeasurePlugin._touchCtrl=new XK.DistanceMeasurementsTouchControl(xMeasurePlugin,{pointerLens:null});
-        xMeasurePlugin._touchCtrl.activate();
-      }
-    } else {
-      if(xMeasurePlugin._mouseCtrl)xMeasurePlugin._mouseCtrl.activate();
-      if(xMeasurePlugin._touchCtrl)xMeasurePlugin._touchCtrl.activate();
-    }
-    el('bn-measure').classList.add('a');
-    st3('Clic en 2 puntos para medir distancia','');
+  });
+}
+
+function _sbSelectFace(faceId){
+  if(!_sb.box||!_sb.cur)return;
+  if(_sbSelFace&&_sbSelFace!==faceId)_sbSetFaceHighlight(_sbSelFace,false);
+  _sbSelFace=faceId;
+  _sbSetFaceHighlight(faceId,true);
+  var lbl=el('sb-face-label');
+  var names={xmin:'−X',xmax:'+X',ymin:'−Y',ymax:'+Y',zmin:'−Z',zmax:'+Z'};
+  if(lbl)lbl.textContent=names[faceId]||faceId;
+  // Slider: reflejar posición actual de la cara
+  var sl=el('sb-face-slider');
+  if(sl){
+    sl.dataset.faceId=faceId;
+    var b=_sb.box,c=_sb.cur,o=_SB_OPP[faceId];
+    var denom=(c[o]-b[faceId])*0.95;
+    var t=denom!==0?(c[faceId]-b[faceId])/denom:0;
+    sl.value=Math.round(Math.max(0,Math.min(100,t*100)));
   }
 }
+
+function _sbSliderChange(pct){
+  if(!_sb.box||!_sb.cur)return;
+  var sl=el('sb-face-slider');if(!sl)return;
+  var faceId=sl.dataset.faceId;if(!faceId)return;
+  var b=_sb.box,c=_sb.cur,o=_SB_OPP[faceId];
+  var t=(pct/100)*0.95;
+  c[faceId]=b[faceId]+t*(c[o]-b[faceId]);
+  _sbApply();
+}
+
+// Gestiona un tap/click del canvas para la caja de sección (mouse y táctil)
+// Devuelve true si el evento fue consumido por la caja
+function _sbHandleCanvasTap(canvasPos){
+  if(!_sb.active)return false;
+  try{return _sbHandleCanvasTapInner(canvasPos);}catch(e){console.warn('[SB] tap:',e);return false;}
+}
+function _sbHandleCanvasTapInner(canvasPos){
+  // Modo alinear: pick de superficie sobre el modelo
+  if(_sbAlignMode){
+    var hitS=xv.scene.pick({canvasPos:canvasPos,pickSurface:true});
+    if(hitS&&hitS.worldNormal&&hitS.entity&&hitS.entity.id&&hitS.entity.id.indexOf('sb_')!==0){
+      var n=hitS.worldNormal;
+      var hLen=Math.sqrt(n[0]*n[0]+n[2]*n[2]);
+      if(hLen<0.3){
+        st3('Selecciona una cara vertical (muro)','sp');
+      } else {
+        var deg=Math.atan2(-n[2]/hLen,n[0]/hLen)*180/Math.PI;
+        deg=((deg%90)+90)%90;
+        _sb.rot.y=Math.round(deg*10)/10;
+        _sbApply();
+        _sbSavePos();
+        st3('Caja alineada ('+_sb.rot.y+'°)','ok');
+      }
+      _sbSetAlignMode(false);
+      return true;
+    }
+    _sbSetAlignMode(false);
+    return true;
+  }
+  // Selección de cara de la caja
+  var hit=xv.scene.pick({canvasPos:canvasPos});
+  if(hit&&hit.entity&&hit.entity.id&&hit.entity.id.indexOf('sb_face_')===0){
+    _sbSelectFace(hit.entity.id.replace('sb_face_',''));
+    return true;
+  }
+  return false;
+}
+
+var _sbPickT=0;
+function _sbInitCanvasEvents(){
+  var cv=el('cv');if(!cv)return;
+  cv.addEventListener('mousemove',function(e){
+    if(!_sb.active)return;
+    // Solo hacer pick si la caja está visible (es la operación más cara)
+    if(!_sb.meshFaces.length||!_sb.meshFaces[0].visible)return;
+    var now=Date.now();
+    if(now-_sbPickT<100)return; // throttle pick
+    _sbPickT=now;
+    var hit=xv.scene.pick({canvasPos:[e.offsetX,e.offsetY]});
+    var faceId=hit&&hit.entity&&hit.entity.id&&hit.entity.id.startsWith('sb_face_')
+               ?hit.entity.id.replace('sb_face_',''):null;
+    if(faceId!==_sbHoverFace){
+      if(_sbHoverFace&&_sbHoverFace!==_sbSelFace)_sbSetFaceHighlight(_sbHoverFace,false);
+      if(faceId&&faceId!==_sbSelFace)_sbSetFaceHighlight(faceId,true);
+      if(_sbSelFace)_sbSetFaceHighlight(_sbSelFace,true);
+      _sbHoverFace=faceId;
+      cv.style.cursor=faceId?'pointer':'';
+    }
+  });
+  cv.addEventListener('click',function(e){
+    if(!_sb.active)return;
+    if(_sbHandleCanvasTap([e.offsetX,e.offsetY])){e.stopPropagation();}
+  },{capture:true});
+}
+
+function sbReset(){
+  if(!_sb.box)return;
+  _sb.cur=Object.assign({},_sb.box);
+  _sb.rot={x:0,y:0,z:0};
+  _sbSyncRotSliders();
+  if(_sb.meshWire)_sb.meshWire.visible=true;
+  _sb.meshFaces.forEach(function(m){m.visible=true;m.pickable=true;});
+  var btnH=el('sb-hide');
+  if(btnH){
+    btnH.dataset.boxVisible='1';
+    var txt=btnH.childNodes[btnH.childNodes.length-1];
+    if(txt&&txt.nodeType===3)txt.textContent=' Ocultar';
+  }
+  _sbApply();
+  _sbSelectFace(_sbSelFace||'ymax');
+}
+
+function _sbSyncRotSliders(){
+  var rot=_sb.rot||{x:0,y:0,z:0};
+  var sl=el('sb-rot-y');var vl=el('sb-rot-y-val');
+  if(sl)sl.value=rot.y||0;
+  if(vl)vl.textContent=(rot.y||0)+'°';
+}
+
+function _sbRotate(axis,deg){
+  if(!_sb.rot)_sb.rot={x:0,y:0,z:0};
+  _sb.rot[axis]=parseInt(deg);
+  var vl=el('sb-rot-'+axis+'-val');
+  if(vl)vl.textContent=deg+'°';
+  _sbApply();
+}
+
+// Persistencia por versión
+function _sbSaveKey(){return'sb_pos_'+(curVR||'default');}
+
+function _sbSavePos(){
+  try{
+    localStorage.setItem(_sbSaveKey(),JSON.stringify({box:_sb.box,cur:_sb.cur,rot:_sb.rot}));
+    st3('Posición de caja guardada','ok');
+  }catch(e){st3('Error al guardar','');}
+}
+
+function _sbLoadPos(){
+  try{
+    var s=localStorage.getItem(_sbSaveKey());
+    return s?JSON.parse(s):null;
+  }catch(e){return null;}
+}
+
 
 // ── COLUMNAS REDIMENSIONABLES + TOUCH ────────────────────────────────────
 (function(){
@@ -2364,7 +2828,6 @@ function toggleMeasure(){
 
 })();
 
-
 // ── EVENTOS ───────────────────────────────────────────────────────────────
 // Navegación
 on('bh2','click',loadHome);
@@ -2476,57 +2939,143 @@ on('fbc3r','change',function(){
 
 // Visor — botones 3D
 on('bn-fit','click',fitModel);
+on('bn-pcolor','click',togglePartColors);
 on('bn-ghost','click',toggleGhost);
 on('bn-iso','click',function(){
   if(!xv||!xscene)return;
   if(this.classList.contains('a')){
-    // Desaislar: mostrar todo
-    xscene.setObjectsVisible(xscene.objectIds,true);
-    typeVisibility={};
+    showAll();
     this.classList.remove('a');
-    buildTypesPanel();
   } else if(vsHl.length>0){
-    // Aislar selección actual
-    xscene.setObjectsVisible(xscene.objectIds,false);
-    vsHl.forEach(function(g){var o=xscene.objects[g];if(o)o.visible=true;});
+    isoGhost(vsHl);
     this.classList.add('a');
+  } else {
+    st3('Selecciona primero una partida o un elemento','sp');
   }
 });
 on('bn-clr','click',function(){
   clrHL();showAll();
   el('bn-iso').classList.remove('a');
   typeVisibility={};
-  if(el('types-panel')&&el('types-panel').style.display!=='none')buildTypesPanel();
+  if(el('cats-panel')&&el('cats-panel').style.display!=='none')buildTypesPanel();
 });
-on('bn-slice','click',toggleSlice);
-on('bn-slice-elem','click',sectionByElement);
-on('bn-storeys','click',function(){
-  var p=el('storeys-panel');if(!p)return;
-  var open=(p.style.display==='block');
-  if(!open){buildStoreysPanel();p.style.display='block';this.classList.add('a');}
-  else{p.style.display='none';this.classList.remove('a');}
-});
-on('bn-measure','click',toggleMeasure);
-on('slice-off','click',function(){
-  if(xSection&&xSectionPlugin){xSectionPlugin.destroySectionPlane('sec1');xSection=null;}
-  el('slice-panel').style.display='none';
-  el('bn-slice').classList.remove('a');
-  el('bn-slice-elem').classList.remove('a');
-});
-var _slEl=el('slice-slider');
-if(_slEl)_slEl.addEventListener('input',function(){updateSlice(parseInt(this.value));});
-on('bn-types','click',function(){
-  var p=el('types-panel');if(!p)return;
-  var isOpen=(p.style.display==='flex'||p.style.display==='block');
-  if(!isOpen){
-    p.style.display='flex';
-    buildTypesPanel(); // always rebuild with latest data
-    this.classList.add('a');
-  } else {
-    p.style.display='none';
-    this.classList.remove('a');
+on('ms-iso','click',function(){
+  if(!curBC||!selMs.size)return;
+  hlMulti();
+  if(vsHl.length){
+    isoGhost(vsHl);
+    var bi=el('bn-iso');if(bi)bi.classList.add('a');
   }
 });
+on('ms-clr','click',function(){
+  selMs.clear();
+  document.querySelectorAll('.tn-cb').forEach(function(cb){
+    cb.dataset.checked='0';
+    cb.style.background='#fff';
+    cb.style.borderColor='#aaa';
+    cb.innerHTML='';
+  });
+  updateMsBar();
+  // Si había aislamiento activo desde la multi-selección, restaurar
+  var bi=el('bn-iso');
+  if(bi&&bi.classList.contains('a')){showAll();bi.classList.remove('a');}
+  clrHL();
+});
+on('bn-secbox','click',function(){if(_sb.active)sbClose();else sbOpen();});
+on('secbox-off','click',function(){sbClose();});
+on('sb-reset','click',function(){sbReset();_sbSavePos();});
+var _sbAlignMode=false;
+var _sbAlignPrevHidden=false;
+
+function _sbSetAlignMode(onOff){
+  _sbAlignMode=onOff;
+  var btn=el('sb-align');
+  if(btn)btn.style.background=onOff?'#e67e22':'var(--acc)';
+  var hint=el('sb-align-hint');
+  if(hint)hint.textContent=onOff?'Clic en la cara de un muro…':'';
+  var cv=el('cv');if(cv)cv.style.cursor=onOff?'crosshair':'';
+  // Ocultar caja durante el pick para que no intercepte el click
+  var btnH=el('sb-hide');
+  if(onOff){
+    _sbAlignPrevHidden=!!(btnH&&btnH.dataset.boxVisible==='0');
+    if(_sb.meshWire)_sb.meshWire.visible=false;
+    _sb.meshFaces.forEach(function(m){m.visible=false;m.pickable=false;});
+  } else {
+    // Restaurar solo si el usuario no la tenía oculta manualmente
+    if(!_sbAlignPrevHidden){
+      if(_sb.meshWire)_sb.meshWire.visible=true;
+      _sb.meshFaces.forEach(function(m){m.visible=true;m.pickable=true;});
+    }
+  }
+}
+on('sb-align','click',function(){_sbSetAlignMode(!_sbAlignMode);});
+on('sb-hide','click',function(){
+  // Flag de estado: visible por defecto
+  var isVisible=this.dataset.boxVisible!=='0';
+  var newVisible=!isVisible;
+  if(_sb.meshWire)_sb.meshWire.visible=newVisible;
+  _sb.meshFaces.forEach(function(m){m.visible=newVisible;m.pickable=newVisible;});
+  this.dataset.boxVisible=newVisible?'1':'0';
+  // Actualizar solo el nodo de texto (preservar SVG)
+  var txt=this.childNodes[this.childNodes.length-1];
+  if(txt&&txt.nodeType===3)txt.textContent=newVisible?' Ocultar':' Mostrar';
+});
+
+var _sbSl=el('sb-face-slider');
+if(_sbSl)_sbSl.addEventListener('input',function(){_sbSliderChange(parseInt(this.value));});
+function _togglePopup(panelId,btn,builder){
+  var p=el(panelId);if(!p)return;
+  var open=(p.style.display==='flex');
+  // Cerrar el otro popup
+  ['cats-panel','views-panel'].forEach(function(id){
+    if(id!==panelId){var o=el(id);if(o)o.style.display='none';}
+  });
+  ['bn-cats','bn-views'].forEach(function(id){
+    if(el(id)&&el(id)!==btn)el(id).classList.remove('a');
+  });
+  if(!open){p.style.display='flex';builder();btn.classList.add('a');}
+  else{p.style.display='none';btn.classList.remove('a');}
+}
+on('bn-cats','click',function(){_togglePopup('cats-panel',this,buildTypesPanel);});
+on('bn-views','click',function(){_togglePopup('views-panel',this,buildViewsPanel);});
+on('sp-view-save','click',function(){
+  if(!xv)return;
+  var name=prompt('Nombre de la vista:');
+  if(!name)return;
+  var cam=xv.camera;
+  var views=_loadViews();
+  views.push({name:name,eye:Array.from(cam.eye),look:Array.from(cam.look),up:Array.from(cam.up)});
+  localStorage.setItem('views_'+(curVR||'default'),JSON.stringify(views));
+  buildViewsPanel();
+});
+function _loadViews(){
+  try{var s=localStorage.getItem('views_'+(curVR||'default'));return s?JSON.parse(s):[];}catch(e){return[];}
+}
+function buildViewsPanel(){
+  var list=el('views-list');if(!list)return;
+  var views=_loadViews();
+  list.innerHTML='';
+  if(!views.length){
+    list.innerHTML='<div style="padding:12px;font-size:10px;color:#9ca3af;text-align:center;">Sin vistas guardadas</div>';
+    return;
+  }
+  views.forEach(function(v,i){
+    var row=document.createElement('div');
+    row.style.cssText='display:flex;align-items:center;gap:6px;padding:7px 12px;cursor:pointer;font-size:11px;color:#374151;';
+    row.innerHTML='<svg viewBox="0 0 24 24" width="13" height="13" stroke="#9ca3af" fill="none" stroke-width="1.75"><path d="M5 7h2l2-3h6l2 3h2a1 1 0 011 1v11a1 1 0 01-1 1H5a1 1 0 01-1-1V8a1 1 0 011-1z"/><circle cx="12" cy="13" r="3.5"/></svg>'
+      +'<span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+esc(v.name)+'</span>'
+      +'<button data-del="'+i+'" style="border:none;background:none;cursor:pointer;color:#d1d5db;font-size:13px;padding:0 2px;line-height:1;">×</button>';
+    row.addEventListener('click',function(e){
+      if(e.target.dataset&&e.target.dataset.del!==undefined){
+        var views2=_loadViews();views2.splice(parseInt(e.target.dataset.del),1);
+        localStorage.setItem('views_'+(curVR||'default'),JSON.stringify(views2));
+        buildViewsPanel();e.stopPropagation();return;
+      }
+      if(xv)xv.cameraFlight.flyTo({eye:v.eye,look:v.look,up:v.up,duration:0.7});
+    });
+    list.appendChild(row);
+  });
+}
 on('bn-export','click',function(){if(curVR){exportVersion(curVR);hideM('m-archivos');}});
 on('bn-dark-p','click',function(){window.applyDark(!window._dark);});
 on('bn-dark-v','click',function(){window.applyDark(!window._dark);});
@@ -2550,9 +3099,8 @@ on('bn-can-archivos','click',function(){hideM('m-archivos');});
   on(id,'change',function(){hideM('m-archivos');});
 });
 
-
 // ── FILTROS POR CATEGORÍA ─────────────────────────────────────────────────
-var IFC_LABELS={'IfcSpace':'Espacios/Habitaciones','IfcWall':'Muros','IfcWallStandardCase':'Muros',
+var IFC_LABELS={'IfcSpace':'Habitaciones/Espacios','IfcWall':'Muros','IfcWallStandardCase':'Muros',
   'IfcSlab':'Forjados','IfcColumn':'Pilares','IfcBeam':'Vigas','IfcDoor':'Puertas',
   'IfcWindow':'Ventanas','IfcRoof':'Cubiertas','IfcCovering':'Revestimientos',
   'IfcStair':'Escaleras','IfcRailing':'Barandillas','IfcFurniture':'Mobiliario',
@@ -2635,14 +3183,12 @@ function setCatsVisible(visible){
 }
 function isolateCategory(type,entities){
   if(!xscene)return;
-  xscene.setObjectsVisible(xscene.objectIds,false);
-  (entities||[]).forEach(function(id){var obj=xscene.objects[id];if(obj)obj.visible=true;});
+  isoGhost(entities||[]);
   typeVisibility={};typeVisibility[type]=true;
   if(entities&&entities.length>0)
     xv.cameraFlight.flyTo({objectIds:entities.slice(0,200),fitFactor:0.6,duration:0.5});
   buildTypesPanel();el('bn-iso').classList.add('a');
 }
-
 
 // ── BACKUP COMPLETO ───────────────────────────────────────────────────────
 async function exportBackup(){
@@ -2727,7 +3273,6 @@ async function exportBackup(){
   }
 }
 
-
 async function restoreBackup(file){
   if(!confirm('¿Restaurar copia de seguridad?\nSe añadirán los datos al contenido actual.'))return;
   try{
@@ -2789,7 +3334,6 @@ async function restoreBackup(file){
   }
 }
 
-
 // Helper: read all records from a store
 function dbG_all(store, cb){
   openDB(function(db){
@@ -2804,7 +3348,12 @@ function dbG_all(store, cb){
 (function(){
   var isTouch=('ontouchstart' in window)||navigator.maxTouchPoints>0;
   var ind=el('dev-ind');
-  if(ind)ind.textContent=(isTouch?'📲':'💻')+' v1';
+  if(ind){
+    var devSvg=isTouch
+      ?'<svg viewBox="0 0 24 24" width="11" height="11" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1.5px;margin-right:3px;"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18.01"/></svg>'
+      :'<svg viewBox="0 0 24 24" width="11" height="11" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1.5px;margin-right:3px;"><rect x="2" y="4" width="20" height="13" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>';
+    ind.innerHTML=devSvg+ind.textContent;
+  }
 
   // ── Dark mode ──────────────────────────────────────────────────────
   var _dark = localStorage.getItem('bc3m-dark')==='1';
@@ -2824,6 +3373,7 @@ function dbG_all(store, cb){
     // Update xeokit background if viewer active
     if(window.xv&&window.xv.scene){
       window.xv.scene.backgroundColor=dark?[0.06,0.07,0.09]:[0.94,0.93,0.91];
+      if(typeof _updateXrayTheme==='function')_updateXrayTheme();
     }
   }
   window.applyDark=applyDark;
