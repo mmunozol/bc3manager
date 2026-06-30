@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache,no-store,must-revalidate">
-<!-- BC3 Manager v2.31 — layout rewrite: full-width on IFC hide, portrait fix, col swap -->
+<!-- BC3 Manager v2.32 — layout rewrite: full-width on IFC hide, portrait fix, col swap -->
 <title>BC3 Manager</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0f0f13">
@@ -572,7 +572,7 @@ html.dark .sri-snippet mark{background:rgba(59,130,246,.22);}
 <!-- HOME -->
 <div class="view active" id="v-home">
   <div class="topbar">
-    <div class="logo">BC3 <em>Manager</em> <span id="dev-ind" style="font-size:9px;color:var(--muted);font-weight:400;margin-left:4px;">v2.31</span></div>
+    <div class="logo">BC3 <em>Manager</em> <span id="dev-ind" style="font-size:9px;color:var(--muted);font-weight:400;margin-left:4px;">v2.32</span></div>
     <div class="tr">
       <input type="file" id="fimport-home" style="position:absolute;left:-9999px;" accept=".bc3m">
       <input type="file" id="f-restore" style="position:absolute;left:-9999px;" accept=".bc3mbackup,.json,application/octet-stream,application/json,*/*">
@@ -596,7 +596,7 @@ html.dark .sri-snippet mark{background:rgba(59,130,246,.22);}
 <!-- PROYECTO -->
 <div class="view" id="v-proj">
   <div class="topbar">
-    <div class="logo">BC3 <em>Manager</em> <span style="font-size:9px;color:var(--muted);font-weight:400;margin-left:4px;">v2.31</span></div>
+    <div class="logo">BC3 <em>Manager</em> <span style="font-size:9px;color:var(--muted);font-weight:400;margin-left:4px;">v2.32</span></div>
     <span style="color:var(--bd2);font-size:16px;">|</span>
     <button class="btn" id="bh2" style="display:inline-flex;align-items:center;gap:5px;font-weight:500;">
       <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
@@ -626,7 +626,7 @@ html.dark .sri-snippet mark{background:rgba(59,130,246,.22);}
 <!-- VISOR -->
 <div class="view" id="v-visor">
   <div class="topbar">
-    <div class="logo">BC3 <em>Manager</em> <span style="font-size:9px;color:var(--muted);font-weight:400;margin-left:2px;">v2.31</span></div>
+    <div class="logo">BC3 <em>Manager</em> <span style="font-size:9px;color:var(--muted);font-weight:400;margin-left:2px;">v2.32</span></div>
     <span style="color:var(--bd2);font-size:16px;">|</span>
     <button class="btn" id="bp3" style="display:inline-flex;align-items:center;gap:5px;font-weight:500;">
       <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
@@ -1139,6 +1139,11 @@ var selMs=new Set(); // multi-selección de partidas
 var nvF=null;
 var xv=null, xModel=null;
 var g2asm={}, asm2g={}, vsHl=[], vsGhost=false;
+// Mapeo contenedor↔hijos para objetos cuya geometría está en sus hijos
+// (p.ej. IfcCurtainWall = montantes/paneles). Permite relacionar la medición
+// (que apunta al contenedor) con la geometría seleccionable (los hijos).
+var childToContainer={};   // hijoId  -> contenedorId (geometría → medición)
+var containerChildren={};  // contId  -> [hijoId,...] (medición → geometría)
 
 // ── HOME ──────────────────────────────────────────────────────────────────
 function loadHome(){
@@ -1292,7 +1297,7 @@ function openVer(vid){
   vsPColor=false; var bpc=el('bn-pcolor'); if(bpc)bpc.classList.remove('a');
   // Reset 3D
   if(xModel){try{xModel.destroy();}catch(e){}xModel=null;}
-  g2asm={}; asm2g={}; vsHl=[];
+  g2asm={}; asm2g={}; vsHl=[]; childToContainer={}; containerChildren={};
   el('dz').classList.remove('h');
   if(el('cv'))el('cv').style.display='none';
   st3('Sin modelo 3D','');pg3(0);
@@ -1687,7 +1692,7 @@ function hlMulti(){
       // Opción A: solo los GUIDs cuya medición cuelga del padre seleccionado
       if(par!==''&&e.par!==undefined&&e.par!==par)return;
       if(e.type==='asm')(asm2g[e.asmCode]||[]).forEach(function(g){guids.add(g);});
-      else if(e.ifc22)guids.add(e.ifc22);
+      else if(e.ifc22)expandGuid(e.ifc22).forEach(function(g){guids.add(g);});
     });
   });
   if(!guids.size)return;
@@ -1970,12 +1975,30 @@ async function initXeokit(){
           });
         }
         if(!fp){
+          // GUID directo del elemento pinchado
           Object.keys(curBC.g).some(function(p){
             return (curBC.g[p]||[]).some(function(e){
               if((e.type==='ifc22'||e.type==='guid')&&e.ifc22===entityId){fp=p;return true;}
               return false;
             });
           });
+        }
+        if(!fp&&childToContainer[entityId]){
+          // El elemento pinchado es hijo de un contenedor (p.ej. montante de un
+          // muro cortina). La medición apunta al contenedor → buscar por él.
+          var contId=childToContainer[entityId];
+          Object.keys(curBC.g).some(function(p){
+            return (curBC.g[p]||[]).some(function(e){
+              if((e.type==='ifc22'||e.type==='guid')&&e.ifc22===contId){fp=p;return true;}
+              return false;
+            });
+          });
+          // Al encontrarlo, resaltar TODO el muro cortina (todos sus hijos)
+          if(fp&&containerChildren[contId]){
+            vsHl=containerChildren[contId].slice();
+            xscene.setObjectsSelected(xscene.selectedObjectIds,false);
+            vsHl.forEach(function(g){var o=xscene.objects[g];if(o)o.selected=true;});
+          }
         }
       }
 
@@ -2069,7 +2092,7 @@ async function loadXkt(xktBuffer, metaJson){
   if(!xv)await initXeokit();
   if(!xv)return;
   var XK=window._XK;
-  if(xModel){try{xModel.destroy();}catch(e){}xModel=null;g2asm={};asm2g={};}
+  if(xModel){try{xModel.destroy();}catch(e){}xModel=null;g2asm={};asm2g={};childToContainer={};containerChildren={};}
   st3('Cargando modelo…','sp');pg3(20);
   try{
     // Create metaModel BEFORE loading XKT so loader can reference it
@@ -2127,6 +2150,10 @@ async function loadXkt(xktBuffer, metaJson){
             asm2g[o.assemblyCode].push(o.id);}
         });
       }
+      // Mapeo contenedor↔hijos (muros cortina, etc.)
+      buildContainerIndex();
+      console.log('[XK] contenedores:',Object.keys(containerChildren).length,
+                  'hijos mapeados:',Object.keys(childToContainer).length);
       var n=Object.keys(xscene.objects).length;
       var nb=Object.keys(g2asm).length;
       st3(n+' elem · '+nb+' vinculados','ok');
@@ -2154,13 +2181,55 @@ async function loadXkt(xktBuffer, metaJson){
   }catch(e){st3('Error: '+e.message,'');console.error('[XK]',e);}
 }
 
+// Construye el mapeo contenedor↔hijos a partir de la jerarquía de metaObjects.
+// Un "contenedor" es un objeto sin geometría propia en la escena pero con hijos
+// que sí tienen geometría (caso típico: IfcCurtainWall → IfcMember/IfcPlate).
+function buildContainerIndex(){
+  childToContainer={}; containerChildren={};
+  if(!xscene||!xscene.metaScene||!xscene.metaScene.metaObjects)return;
+  var mos=xscene.metaScene.metaObjects;
+  // Índice padre → hijos
+  var kids={};
+  Object.keys(mos).forEach(function(id){
+    var mo=mos[id]; var par=mo&&mo.parent;
+    // En xeokit el padre puede venir como objeto o como id
+    var parId=par&&typeof par==='object'?par.id:par;
+    if(parId){(kids[parId]=kids[parId]||[]).push(id);}
+  });
+  // Para cada objeto SIN geometría propia pero con hijos geométricos → contenedor
+  Object.keys(mos).forEach(function(id){
+    var hasOwnGeom=!!xscene.objects[id];
+    if(hasOwnGeom)return;                 // tiene geometría propia: no es contenedor
+    var ch=kids[id]; if(!ch||!ch.length)return;
+    // Recoger descendientes con geometría (recursivo: montantes pueden anidar)
+    var geomKids=[];
+    (function collect(nid){
+      (kids[nid]||[]).forEach(function(cid){
+        if(xscene.objects[cid])geomKids.push(cid);
+        collect(cid);
+      });
+    })(id);
+    if(geomKids.length){
+      containerChildren[id]=geomKids;
+      geomKids.forEach(function(cid){childToContainer[cid]=id;});
+    }
+  });
+}
+
+// Expande un GUID a los IDs realmente renderizables: si el GUID es un contenedor
+// sin geometría propia (p.ej. muro cortina), devuelve sus hijos; si no, él mismo.
+function expandGuid(g){
+  if(containerChildren[g])return containerChildren[g];
+  return [g];
+}
+
 function hlPart(code,BC){
   if(!xv||!xscene)return;
   xscene.setObjectsSelected(xscene.selectedObjectIds,false);
   var guids=new Set();
   (BC.g[code]||[]).forEach(function(e){
     if(e.type==='asm')(asm2g[e.asmCode]||[]).forEach(function(g){guids.add(g);});
-    else if(e.ifc22)guids.add(e.ifc22);
+    else if(e.ifc22)expandGuid(e.ifc22).forEach(function(g){guids.add(g);});
   });
   var found=[];
   guids.forEach(function(g){var o=xscene.objects[g];if(o){o.selected=true;found.push(g);}});
@@ -2325,7 +2394,7 @@ function togglePartColors(){
       (curBC.g[code]||[]).forEach(function(e){
         var guids=[];
         if(e.type==='asm')guids=asm2g[e.asmCode]||[];
-        else if(e.ifc22)guids=[e.ifc22];
+        else if(e.ifc22)guids=expandGuid(e.ifc22);
         guids.forEach(function(g){
           var o=xscene.objects[g];
           if(o)o.colorize=col;
