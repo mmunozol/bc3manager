@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache,no-store,must-revalidate">
-<!-- BC3 Manager v2.34 — layout rewrite: full-width on IFC hide, portrait fix, col swap -->
+<!-- BC3 Manager v2.35 — layout rewrite: full-width on IFC hide, portrait fix, col swap -->
 <title>BC3 Manager</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0f0f13">
@@ -572,7 +572,7 @@ html.dark .sri-snippet mark{background:rgba(59,130,246,.22);}
 <!-- HOME -->
 <div class="view active" id="v-home">
   <div class="topbar">
-    <div class="logo">BC3 <em>Manager</em> <span id="dev-ind" style="font-size:9px;color:var(--muted);font-weight:400;margin-left:4px;">v2.34</span></div>
+    <div class="logo">BC3 <em>Manager</em> <span id="dev-ind" style="font-size:9px;color:var(--muted);font-weight:400;margin-left:4px;">v2.35</span></div>
     <div class="tr">
       <input type="file" id="fimport-home" style="position:absolute;left:-9999px;" accept=".bc3m">
       <input type="file" id="f-restore" style="position:absolute;left:-9999px;" accept=".bc3mbackup,.json,application/octet-stream,application/json,*/*">
@@ -596,7 +596,7 @@ html.dark .sri-snippet mark{background:rgba(59,130,246,.22);}
 <!-- PROYECTO -->
 <div class="view" id="v-proj">
   <div class="topbar">
-    <div class="logo">BC3 <em>Manager</em> <span style="font-size:9px;color:var(--muted);font-weight:400;margin-left:4px;">v2.34</span></div>
+    <div class="logo">BC3 <em>Manager</em> <span style="font-size:9px;color:var(--muted);font-weight:400;margin-left:4px;">v2.35</span></div>
     <span style="color:var(--bd2);font-size:16px;">|</span>
     <button class="btn" id="bh2" style="display:inline-flex;align-items:center;gap:5px;font-weight:500;">
       <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
@@ -609,9 +609,9 @@ html.dark .sri-snippet mark{background:rgba(59,130,246,.22);}
         <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         Nueva versión
       </button>
-      <button class="btn" id="bn-dp" style="display:inline-flex;align-items:center;gap:5px;color:var(--danger);border-color:var(--bd);">
-        <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M9 6V4h6v2"/></svg>
-        Eliminar obra
+      <button class="btn" id="bn-editp" style="display:inline-flex;align-items:center;gap:5px;">
+        <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"/></svg>
+        Editar obra
       </button>
       <button class="btn" id="bn-gear-proj" title="Opciones" style="display:flex;align-items:center;justify-content:center;padding:0;width:32px;height:32px;"><svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
     </div>
@@ -626,7 +626,7 @@ html.dark .sri-snippet mark{background:rgba(59,130,246,.22);}
 <!-- VISOR -->
 <div class="view" id="v-visor">
   <div class="topbar">
-    <div class="logo">BC3 <em>Manager</em> <span style="font-size:9px;color:var(--muted);font-weight:400;margin-left:2px;">v2.34</span></div>
+    <div class="logo">BC3 <em>Manager</em> <span style="font-size:9px;color:var(--muted);font-weight:400;margin-left:2px;">v2.35</span></div>
     <span style="color:var(--bd2);font-size:16px;">|</span>
     <button class="btn" id="bp3" style="display:inline-flex;align-items:center;gap:5px;font-weight:500;">
       <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
@@ -1074,6 +1074,51 @@ html.dark .sri-snippet mark{background:rgba(59,130,246,.22);}
   </div>
 </div>
 
+<!-- Editar obra -->
+<div class="mb" id="m-editp">
+  <div class="md"><h3>Editar obra</h3>
+    <div class="fr"><label>Nombre *</label><input id="e-pn" placeholder="Nombre de la obra"></div>
+    <div class="fr"><label>Dirección</label><input id="e-pa"></div>
+    <div class="fr"><label>Cliente</label><input id="e-pc"></div>
+    <div class="fr"><label>Notas</label><textarea id="e-po" rows="2"></textarea></div>
+    <div class="ma" style="justify-content:space-between;">
+      <button class="btn" id="bn-delp" style="color:var(--danger);border-color:var(--bd);display:inline-flex;align-items:center;gap:5px;">
+        <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M9 6V4h6v2"/></svg>
+        Eliminar obra
+      </button>
+      <div style="display:flex;gap:8px;">
+        <button class="btn" id="bn-caneditp">Cancelar</button>
+        <button class="btn p" id="bn-okeditp">Guardar cambios</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Editar versión -->
+<div class="mb" id="m-editv">
+  <div class="md"><h3>Editar versión</h3>
+    <div class="fr"><label>Nombre *</label><input id="e-vn" placeholder="Proyecto básico v1.0"></div>
+    <div class="fr"><label>Estado</label>
+      <select id="e-vs">
+        <option value="draft">Borrador</option>
+        <option value="current">Vigente</option>
+        <option value="closed">Cerrada</option>
+      </select>
+    </div>
+    <div class="fr"><label>Notas</label><textarea id="e-vo" rows="2"></textarea></div>
+    <div class="ma" style="justify-content:space-between;">
+      <button class="btn" id="bn-delv" style="color:var(--danger);border-color:var(--bd);display:inline-flex;align-items:center;gap:5px;">
+        <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M9 6V4h6v2"/></svg>
+        Eliminar versión
+      </button>
+      <div style="display:flex;gap:8px;">
+        <button class="btn" id="bn-caneditv">Cancelar</button>
+        <button class="btn p" id="bn-okeditv">Guardar cambios</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ══ BUSCADOR ══════════════════════════════════════════════════════════ -->
 <div id="srch-overlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.45);z-index:99999;">
   <div id="srch-box" style="position:absolute;top:68px;left:50%;transform:translateX(-50%);width:min(640px,92vw);max-height:calc(100vh - 84px);background:var(--panel);border-radius:12px;border:1px solid var(--bd2);box-shadow:0 20px 60px rgba(0,0,0,.4);display:flex;flex-direction:column;overflow:hidden;">
@@ -1273,16 +1318,16 @@ function loadProj(id){
         btnExp.innerHTML='<svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Exportar';
         (function(vid){btnExp.addEventListener('click',function(e){e.stopPropagation();exportVersion(vid);});})(v.id);
         va.appendChild(btnExp);
-        var btnDel=document.createElement('button');
-        btnDel.className='btn';
-        btnDel.style.cssText='padding:7px 9px;color:var(--danger);border-color:transparent;background:transparent;display:inline-flex;align-items:center;';
-        btnDel.innerHTML='<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>';
-        (function(vid){btnDel.addEventListener('click',function(e){
+        var btnEdit=document.createElement('button');
+        btnEdit.className='btn';
+        btnEdit.style.cssText='padding:7px 9px;color:var(--muted);border-color:transparent;background:transparent;display:inline-flex;align-items:center;';
+        btnEdit.title='Editar versión';
+        btnEdit.innerHTML='<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"/></svg>';
+        (function(vid){btnEdit.addEventListener('click',function(e){
           e.stopPropagation();
-          if(!confirm('¿Eliminar esta versión?'))return;
-          dbD('versions',vid,function(){dbD('bc3data',vid,function(){dbD('ifcbin',vid,function(){loadProj(id);});});});
+          openEditVer(vid);
         });})(v.id);
-        va.appendChild(btnDel);
+        va.appendChild(btnEdit);
         vl.appendChild(card);
       });
     });
@@ -3630,14 +3675,92 @@ function _sbLoadPos(){
 // Navegación
 on('bh2','click',loadHome);
 on('bp3','click',function(){if(curPJ)loadProj(curPJ);});
-on('bn-dp','click',function(){
-  if(!confirm('¿Eliminar esta obra y todas sus versiones?'))return;
+// ── Editar obra ───────────────────────────────────────────────────────────
+function openEditObra(){
+  if(!curPJ)return;
+  dbG('projects',curPJ,function(p){
+    if(!p)return;
+    el('e-pn').value=p.name||'';
+    el('e-pa').value=p.address||'';
+    el('e-pc').value=p.client||'';
+    el('e-po').value=p.notes||'';
+    showM('m-editp');
+  });
+}
+on('bn-editp','click',openEditObra);
+on('bn-caneditp','click',function(){hideM('m-editp');});
+on('bn-okeditp','click',function(){
+  var nm=(el('e-pn').value||'').trim();
+  if(!nm){alert('El nombre es obligatorio.');return;}
+  dbG('projects',curPJ,function(p){
+    if(!p)return;
+    p.name=nm; p.address=(el('e-pa').value||'').trim();
+    p.client=(el('e-pc').value||'').trim(); p.notes=(el('e-po').value||'').trim();
+    dbP('projects',p,function(){hideM('m-editp');loadProj(curPJ);});
+  });
+});
+on('bn-delp','click',function(){
+  // Doble verificación
+  if(!confirm('¿Eliminar esta obra y TODAS sus versiones?\n\nEsta acción no se puede deshacer.'))return;
+  var nm=(el('e-pn').value||'esta obra').trim();
+  if(!confirm('CONFIRMACIÓN FINAL\n\nSe borrará "'+nm+'" con todas sus versiones y modelos. ¿Seguro?'))return;
   dbA('versions',function(vers){
     vers.filter(function(v){return v.projectId===curPJ;}).forEach(function(v){
       dbD('versions',v.id);dbD('bc3data',v.id);dbD('ifcbin',v.id);
     });
-    dbD('projects',curPJ,function(){loadHome();});
+    dbD('projects',curPJ,function(){hideM('m-editp');loadHome();});
   });
+});
+
+// ── Editar versión ─────────────────────────────────────────────────────────
+var _editVid=null;
+function openEditVer(vid){
+  _editVid=vid;
+  dbG('versions',vid,function(v){
+    if(!v)return;
+    el('e-vn').value=v.name||'';
+    el('e-vs').value=v.status||'draft';
+    el('e-vo').value=v.notes||'';
+    showM('m-editv');
+  });
+}
+on('bn-caneditv','click',function(){hideM('m-editv');});
+on('bn-okeditv','click',function(){
+  if(!_editVid)return;
+  var nm=(el('e-vn').value||'').trim();
+  if(!nm){alert('El nombre es obligatorio.');return;}
+  var newSt=el('e-vs').value;
+  dbG('versions',_editVid,function(v){
+    if(!v)return;
+    v.name=nm; v.notes=(el('e-vo').value||'').trim();
+    var wasSt=v.status;
+    v.status=newSt;
+    function finish(){dbP('versions',v,function(){hideM('m-editv');loadProj(curPJ);});}
+    // Si se marca como vigente, degradar las otras vigentes a borrador
+    if(newSt==='current'&&wasSt!=='current'){
+      dbA('versions',function(all){
+        var others=all.filter(function(ov){return ov.projectId===v.projectId&&ov.id!==v.id&&ov.status==='current';});
+        var pend=others.length;
+        if(!pend){finish();return;}
+        others.forEach(function(ov){
+          dbG('versions',ov.id,function(vv){
+            if(vv){vv.status='draft';dbP('versions',vv,function(){});}
+            if(--pend===0)finish();
+          });
+        });
+      });
+    } else finish();
+  });
+});
+on('bn-delv','click',function(){
+  if(!_editVid)return;
+  var nm=(el('e-vn').value||'esta versión').trim();
+  if(!confirm('¿Eliminar esta versión?\n\nEsta acción no se puede deshacer.'))return;
+  if(!confirm('CONFIRMACIÓN FINAL\n\nSe borrará "'+nm+'" y su modelo asociado. ¿Seguro?'))return;
+  var vid=_editVid;
+  dbD('versions',vid,function(){dbD('bc3data',vid,function(){dbD('ifcbin',vid,function(){
+    hideM('m-editv');loadProj(curPJ);
+  });});});
 });
 
 // Nueva obra
