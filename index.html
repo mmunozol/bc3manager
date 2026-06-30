@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache,no-store,must-revalidate">
-<!-- BC3 Manager v2.29 — layout rewrite: full-width on IFC hide, portrait fix, col swap -->
+<!-- BC3 Manager v2.31 — layout rewrite: full-width on IFC hide, portrait fix, col swap -->
 <title>BC3 Manager</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0f0f13">
@@ -572,7 +572,7 @@ html.dark .sri-snippet mark{background:rgba(59,130,246,.22);}
 <!-- HOME -->
 <div class="view active" id="v-home">
   <div class="topbar">
-    <div class="logo">BC3 <em>Manager</em> <span id="dev-ind" style="font-size:9px;color:var(--muted);font-weight:400;margin-left:4px;">v2.30</span></div>
+    <div class="logo">BC3 <em>Manager</em> <span id="dev-ind" style="font-size:9px;color:var(--muted);font-weight:400;margin-left:4px;">v2.31</span></div>
     <div class="tr">
       <input type="file" id="fimport-home" style="position:absolute;left:-9999px;" accept=".bc3m">
       <input type="file" id="f-restore" style="position:absolute;left:-9999px;" accept=".bc3mbackup,.json,application/octet-stream,application/json,*/*">
@@ -596,7 +596,7 @@ html.dark .sri-snippet mark{background:rgba(59,130,246,.22);}
 <!-- PROYECTO -->
 <div class="view" id="v-proj">
   <div class="topbar">
-    <div class="logo">BC3 <em>Manager</em> <span style="font-size:9px;color:var(--muted);font-weight:400;margin-left:4px;">v2.29</span></div>
+    <div class="logo">BC3 <em>Manager</em> <span style="font-size:9px;color:var(--muted);font-weight:400;margin-left:4px;">v2.31</span></div>
     <span style="color:var(--bd2);font-size:16px;">|</span>
     <button class="btn" id="bh2" style="display:inline-flex;align-items:center;gap:5px;font-weight:500;">
       <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
@@ -626,7 +626,7 @@ html.dark .sri-snippet mark{background:rgba(59,130,246,.22);}
 <!-- VISOR -->
 <div class="view" id="v-visor">
   <div class="topbar">
-    <div class="logo">BC3 <em>Manager</em> <span style="font-size:9px;color:var(--muted);font-weight:400;margin-left:2px;">v2.29</span></div>
+    <div class="logo">BC3 <em>Manager</em> <span style="font-size:9px;color:var(--muted);font-weight:400;margin-left:2px;">v2.31</span></div>
     <span style="color:var(--bd2);font-size:16px;">|</span>
     <button class="btn" id="bp3" style="display:inline-flex;align-items:center;gap:5px;font-weight:500;">
       <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
@@ -2341,26 +2341,48 @@ function togglePartColors(){
   el('bn-pcolor').classList.toggle('a',vsPColor);
 }
 
+// Modo del botón fantasma/XRay: cicla 0 → 1 → 2 → 0...
+//   0 = XRay     : lo no aislado con aristas translúcidas
+//   1 = Sólido   : todo visible y sólido
+//   2 = Fantasma : lo no aislado 100% transparente (invisible)
+var ghostMode=0;
+
 function toggleGhost(){
   if(!xv||!xscene)return;
   var isoBtn=el('bn-iso');
   var isoActive=isoBtn&&isoBtn.classList.contains('a');
 
   if(isoActive && vsHl.length>0){
-    // Con aislamiento: alternar entre "solo selección sólida" y "selección + resto en xray"
-    vsGhost=!vsGhost;
-    if(vsGhost){
-      // Resto en xray, selección sólida (estado por defecto al aislar)
+    // Con aislamiento: ciclo de 3 estados
+    ghostMode=(ghostMode+1)%3;
+    var visSet=new Set(vsHl);
+    if(ghostMode===0){
+      // XRay: resto con aristas translúcidas, selección sólida
       isoGhost(vsHl);
-    } else {
-      // Todo visible y sólido, selección sigue visible
+      vsGhost=true;
+    } else if(ghostMode===1){
+      // Sólido: todo visible y sólido
       xscene.setObjectsXRayed(xscene.objectIds,false);
       xscene.setObjectsVisible(xscene.objectIds,true);
       xscene.setObjectsPickable(xscene.objectIds,true);
+      vsGhost=false;
+    } else {
+      // Fantasma total: lo no aislado 100% transparente (oculto)
+      xscene.objectIds.forEach(function(id){
+        var o=xscene.objects[id];if(!o)return;
+        if(visSet.has(id)){o.xrayed=false;o.visible=true;o.pickable=true;}
+        else{o.xrayed=false;o.visible=false;o.pickable=false;}
+      });
+      vsGhost=true;
     }
+    // Mantener IfcSpace siempre ocultos
+    _ifcSpaceIds.forEach(function(id){
+      var o=xscene.objects[id];if(o){o.visible=false;o.pickable=false;}
+    });
   } else {
-    // Sin aislamiento: ghost global
+    // Sin aislamiento: ghost global (2 estados, sin "fantasma total")
     vsGhost=!vsGhost;
+    ghostMode=vsGhost?0:1;
     if(vsGhost){
       xscene.setObjectsXRayed(xscene.objectIds,true);
       xscene.setObjectsPickable(xscene.objectIds,false);
@@ -2372,7 +2394,8 @@ function toggleGhost(){
       showAll();
     }
   }
-  el('bn-ghost').classList.toggle('a',vsGhost);
+  // El botón queda "activo" salvo en estado Sólido
+  el('bn-ghost').classList.toggle('a',ghostMode!==1);
 }
 
 function showHC(name,partida,esp){
@@ -3631,12 +3654,12 @@ on('bn-iso','click',function(){
   if(this.classList.contains('a')){
     showAll();
     this.classList.remove('a');
-    vsGhost=false;
+    vsGhost=false;ghostMode=1;
     el('bn-ghost').classList.remove('a');
   } else if(vsHl.length>0){
     isoGhost(vsHl);
     this.classList.add('a');
-    vsGhost=true;
+    vsGhost=true;ghostMode=0;
     el('bn-ghost').classList.add('a');
   } else {
     st3('Selecciona primero una partida o un elemento','sp');
@@ -3653,7 +3676,9 @@ on('ms-iso','click',function(){
   hlMulti();
   if(vsHl.length){
     isoGhost(vsHl);
+    vsGhost=true;ghostMode=0;
     var bi=el('bn-iso');if(bi)bi.classList.add('a');
+    var bg=el('bn-ghost');if(bg)bg.classList.add('a');
   }
 });
 on('ms-clr','click',function(){
@@ -3948,10 +3973,12 @@ function setCatsVisible(visible){
 function isolateCategory(type,entities){
   if(!xscene)return;
   isoGhost(entities||[]);
+  vsGhost=true;ghostMode=0;
   typeVisibility={};typeVisibility[type]=true;
   if(entities&&entities.length>0)
     xv.cameraFlight.flyTo({objectIds:entities.slice(0,200),fitFactor:0.6,duration:0.5});
   buildTypesPanel();el('bn-iso').classList.add('a');
+  var bg=el('bn-ghost');if(bg)bg.classList.add('a');
 }
 
 // ── BACKUP COMPLETO ───────────────────────────────────────────────────────
