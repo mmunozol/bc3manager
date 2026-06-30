@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache,no-store,must-revalidate">
-<!-- BC3 Manager v2.33 — layout rewrite: full-width on IFC hide, portrait fix, col swap -->
+<!-- BC3 Manager v2.34 — layout rewrite: full-width on IFC hide, portrait fix, col swap -->
 <title>BC3 Manager</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0f0f13">
@@ -572,7 +572,7 @@ html.dark .sri-snippet mark{background:rgba(59,130,246,.22);}
 <!-- HOME -->
 <div class="view active" id="v-home">
   <div class="topbar">
-    <div class="logo">BC3 <em>Manager</em> <span id="dev-ind" style="font-size:9px;color:var(--muted);font-weight:400;margin-left:4px;">v2.33</span></div>
+    <div class="logo">BC3 <em>Manager</em> <span id="dev-ind" style="font-size:9px;color:var(--muted);font-weight:400;margin-left:4px;">v2.34</span></div>
     <div class="tr">
       <input type="file" id="fimport-home" style="position:absolute;left:-9999px;" accept=".bc3m">
       <input type="file" id="f-restore" style="position:absolute;left:-9999px;" accept=".bc3mbackup,.json,application/octet-stream,application/json,*/*">
@@ -596,7 +596,7 @@ html.dark .sri-snippet mark{background:rgba(59,130,246,.22);}
 <!-- PROYECTO -->
 <div class="view" id="v-proj">
   <div class="topbar">
-    <div class="logo">BC3 <em>Manager</em> <span style="font-size:9px;color:var(--muted);font-weight:400;margin-left:4px;">v2.33</span></div>
+    <div class="logo">BC3 <em>Manager</em> <span style="font-size:9px;color:var(--muted);font-weight:400;margin-left:4px;">v2.34</span></div>
     <span style="color:var(--bd2);font-size:16px;">|</span>
     <button class="btn" id="bh2" style="display:inline-flex;align-items:center;gap:5px;font-weight:500;">
       <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
@@ -626,7 +626,7 @@ html.dark .sri-snippet mark{background:rgba(59,130,246,.22);}
 <!-- VISOR -->
 <div class="view" id="v-visor">
   <div class="topbar">
-    <div class="logo">BC3 <em>Manager</em> <span style="font-size:9px;color:var(--muted);font-weight:400;margin-left:2px;">v2.33</span></div>
+    <div class="logo">BC3 <em>Manager</em> <span style="font-size:9px;color:var(--muted);font-weight:400;margin-left:2px;">v2.34</span></div>
     <span style="color:var(--bd2);font-size:16px;">|</span>
     <button class="btn" id="bp3" style="display:inline-flex;align-items:center;gap:5px;font-weight:500;">
       <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
@@ -1515,7 +1515,7 @@ function renderTree(){
     else if(hk){bc='b-s';bt='SUB';cnt.s++;}
     else{bc='b-p';bt='PAR';cnt.p++;}
     var row=document.createElement('div');
-    row.className='tn';row.dataset.code=code;
+    row.className='tn';row.dataset.code=code;if(par)row.dataset.par=par;
     row.style.paddingLeft=(dep*14)+'px';
     // Badge tipo
     var badge=document.createElement('span');
@@ -1964,7 +1964,7 @@ async function initXeokit(){
         if(mo)name=mo.name||mo.type||entityId;
       }
 
-      var fp=null, asmCode=g2asm[entityId];
+      var fp=null, fpPar=null, asmCode=g2asm[entityId];
       if(curBC){
         if(asmCode){
           Object.keys(curBC.g).some(function(p){
@@ -1978,7 +1978,7 @@ async function initXeokit(){
           // GUID directo del elemento pinchado
           Object.keys(curBC.g).some(function(p){
             return (curBC.g[p]||[]).some(function(e){
-              if((e.type==='ifc22'||e.type==='guid')&&e.ifc22===entityId){fp=p;return true;}
+              if((e.type==='ifc22'||e.type==='guid')&&e.ifc22===entityId){fp=p;fpPar=e.par;return true;}
               return false;
             });
           });
@@ -1989,7 +1989,7 @@ async function initXeokit(){
           var contId=childToContainer[entityId];
           Object.keys(curBC.g).some(function(p){
             return (curBC.g[p]||[]).some(function(e){
-              if((e.type==='ifc22'||e.type==='guid')&&e.ifc22===contId){fp=p;return true;}
+              if((e.type==='ifc22'||e.type==='guid')&&e.ifc22===contId){fp=p;fpPar=e.par;return true;}
               return false;
             });
           });
@@ -2004,7 +2004,16 @@ async function initXeokit(){
 
       if(fp){
         document.querySelectorAll('.tn').forEach(function(n){n.classList.remove('s');});
-        var node=document.querySelector('.tn[data-code="'+fp+'"]');
+        // Si el código está repetido en varios capítulos, elegir la aparición
+        // bajo el padre real de la medición (fpPar). Si no, la primera.
+        var node=null;
+        if(fpPar){
+          var cands=document.querySelectorAll('.tn[data-code="'+fp+'"]');
+          for(var ci=0;ci<cands.length;ci++){
+            if(cands[ci].dataset.par===fpPar){node=cands[ci];break;}
+          }
+        }
+        if(!node)node=document.querySelector('.tn[data-code="'+fp+'"]');
         if(node){
           node.classList.add('s');
           // Scroll centrado para asegurar visibilidad
