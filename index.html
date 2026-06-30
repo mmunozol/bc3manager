@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache,no-store,must-revalidate">
-<!-- BC3 Manager v2.37 — layout rewrite: full-width on IFC hide, portrait fix, col swap -->
+<!-- BC3 Manager v2.38 — layout rewrite: full-width on IFC hide, portrait fix, col swap -->
 <title>BC3 Manager</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0f0f13">
@@ -552,7 +552,7 @@ html.dark .sri-snippet mark{background:rgba(59,130,246,.22);}
 <!-- HOME -->
 <div class="view active" id="v-home">
   <div class="topbar">
-    <div class="logo">BC3 <em>Manager</em> <span id="dev-ind" style="font-size:9px;color:var(--muted);font-weight:400;margin-left:4px;">v2.37</span></div>
+    <div class="logo">BC3 <em>Manager</em> <span id="dev-ind" style="font-size:9px;color:var(--muted);font-weight:400;margin-left:4px;">v2.38</span></div>
     <div class="tr">
       <input type="file" id="fimport-home" style="position:absolute;left:-9999px;" accept=".bc3m">
       <input type="file" id="f-restore" style="position:absolute;left:-9999px;" accept=".bc3mbackup,.json,application/octet-stream,application/json,*/*">
@@ -576,7 +576,7 @@ html.dark .sri-snippet mark{background:rgba(59,130,246,.22);}
 <!-- PROYECTO -->
 <div class="view" id="v-proj">
   <div class="topbar">
-    <div class="logo">BC3 <em>Manager</em> <span style="font-size:9px;color:var(--muted);font-weight:400;margin-left:4px;">v2.37</span></div>
+    <div class="logo">BC3 <em>Manager</em> <span style="font-size:9px;color:var(--muted);font-weight:400;margin-left:4px;">v2.38</span></div>
     <span style="color:var(--bd2);font-size:16px;">|</span>
     <button class="btn" id="bh2" style="display:inline-flex;align-items:center;gap:5px;font-weight:500;">
       <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
@@ -606,7 +606,7 @@ html.dark .sri-snippet mark{background:rgba(59,130,246,.22);}
 <!-- VISOR -->
 <div class="view" id="v-visor">
   <div class="topbar">
-    <div class="logo">BC3 <em>Manager</em> <span style="font-size:9px;color:var(--muted);font-weight:400;margin-left:2px;">v2.37</span></div>
+    <div class="logo">BC3 <em>Manager</em> <span style="font-size:9px;color:var(--muted);font-weight:400;margin-left:2px;">v2.38</span></div>
     <span style="color:var(--bd2);font-size:16px;">|</span>
     <button class="btn" id="bp3" style="display:inline-flex;align-items:center;gap:5px;font-weight:500;">
       <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
@@ -692,6 +692,7 @@ html.dark .sri-snippet mark{background:rgba(59,130,246,.22);}
           </div>
         </div>
         <canvas id="cv"></canvas>
+        <canvas id="navcube" style="display:none;position:absolute;top:8px;right:8px;width:110px;height:110px;z-index:25;pointer-events:auto;"></canvas>
         <div id="hc" style="display:none;position:absolute;bottom:36px;left:8px;width:max-content;max-width:70%;background:rgba(255,255,255,.93);color:#374151;border-radius:6px;padding:6px 9px;font-size:10px;z-index:30;pointer-events:none;border:1px solid rgba(0,0,0,.1);box-shadow:0 2px 6px rgba(0,0,0,.1);">
           <div style="font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" id="hct">—</div>
           <div id="hcp" style="color:#6b7280;font-size:9px;margin-top:1px;"></div>
@@ -1292,6 +1293,7 @@ function openVer(vid){
   if(typeof spClear==='function')_spPlane=null,_spMode=false;
   el('dz').classList.remove('h');
   if(el('cv'))el('cv').style.display='none';
+  if(el('navcube'))el('navcube').style.display='none';
   st3('Sin modelo 3D','');pg3(0);
   if(el('tv'))el('tv').innerHTML='';
   if(el('dc'))el('dc').innerHTML='<div class="ed"><p>Selecciona una partida</p></div>';
@@ -1934,6 +1936,19 @@ async function initXeokit(){
     xv.cameraControl.rotationInertia=0;     // respuesta inmediata, sin "patinar"
     xv.cameraControl.panInertia=0.5;
     try{xscene.pbrEnabled=false;}catch(e){} // PBR off: mucho más ligero
+    // Cubo de navegación (NavCube): clic en una cara → vista ortográfica
+    try{
+      if(!xNavCube && XK.NavCubePlugin){
+        xNavCube=new XK.NavCubePlugin(xv,{
+          canvasId:'navcube',
+          visible:true,
+          cameraFly:true,
+          cameraFlyDuration:0.4,
+          fitVisible:true,        // encuadra solo lo visible al cambiar de cara
+          color:'#ffffff'
+        });
+      }
+    }catch(e){console.warn('[NavCube]',e);}
     xscene.clearLights();
     new XK.AmbientLight(xscene,{color:[1,1,1],intensity:0.4});
     new XK.DirLight(xscene,{dir:[0.8,-0.6,-0.4],color:[1,1,1],intensity:0.7,space:'world'});
@@ -2168,6 +2183,7 @@ async function loadXkt(xktBuffer, metaJson){
       st3(n+' elem · '+nb+' vinculados','ok');
       el('dz').classList.add('h');
       el('cv').style.display='block';
+      if(el('navcube'))el('navcube').style.display='block';
       // Rebuild types panel with actual model data
       if(el('cats-panel')&&el('cats-panel').style.display!=='none'){
         buildTypesPanel();
@@ -2738,7 +2754,7 @@ async function applyMetaFile(file){
 
 
 // ── SECCIÓN, PLANTAS Y MEDICIÓN ─────────────────────────────────────────
-var xSection=null, xSectionPlugin=null;
+var xSection=null, xSectionPlugin=null, xNavCube=null;
 // ── PLANO DE SECCIÓN ALINEADO AL MURO ──────────────────────────────────────
 // SectionPlanesPlugin nativo: un solo plano por clic, con la normal de la cara
 // pinchada → queda paralelo al muro aunque el modelo esté girado N-S. Ligero.
