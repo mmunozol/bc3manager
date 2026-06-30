@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache,no-store,must-revalidate">
-<!-- BC3 Manager v2.32 — layout rewrite: full-width on IFC hide, portrait fix, col swap -->
+<!-- BC3 Manager v2.33 — layout rewrite: full-width on IFC hide, portrait fix, col swap -->
 <title>BC3 Manager</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0f0f13">
@@ -572,7 +572,7 @@ html.dark .sri-snippet mark{background:rgba(59,130,246,.22);}
 <!-- HOME -->
 <div class="view active" id="v-home">
   <div class="topbar">
-    <div class="logo">BC3 <em>Manager</em> <span id="dev-ind" style="font-size:9px;color:var(--muted);font-weight:400;margin-left:4px;">v2.32</span></div>
+    <div class="logo">BC3 <em>Manager</em> <span id="dev-ind" style="font-size:9px;color:var(--muted);font-weight:400;margin-left:4px;">v2.33</span></div>
     <div class="tr">
       <input type="file" id="fimport-home" style="position:absolute;left:-9999px;" accept=".bc3m">
       <input type="file" id="f-restore" style="position:absolute;left:-9999px;" accept=".bc3mbackup,.json,application/octet-stream,application/json,*/*">
@@ -596,7 +596,7 @@ html.dark .sri-snippet mark{background:rgba(59,130,246,.22);}
 <!-- PROYECTO -->
 <div class="view" id="v-proj">
   <div class="topbar">
-    <div class="logo">BC3 <em>Manager</em> <span style="font-size:9px;color:var(--muted);font-weight:400;margin-left:4px;">v2.32</span></div>
+    <div class="logo">BC3 <em>Manager</em> <span style="font-size:9px;color:var(--muted);font-weight:400;margin-left:4px;">v2.33</span></div>
     <span style="color:var(--bd2);font-size:16px;">|</span>
     <button class="btn" id="bh2" style="display:inline-flex;align-items:center;gap:5px;font-weight:500;">
       <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
@@ -626,7 +626,7 @@ html.dark .sri-snippet mark{background:rgba(59,130,246,.22);}
 <!-- VISOR -->
 <div class="view" id="v-visor">
   <div class="topbar">
-    <div class="logo">BC3 <em>Manager</em> <span style="font-size:9px;color:var(--muted);font-weight:400;margin-left:2px;">v2.32</span></div>
+    <div class="logo">BC3 <em>Manager</em> <span style="font-size:9px;color:var(--muted);font-weight:400;margin-left:2px;">v2.33</span></div>
     <span style="color:var(--bd2);font-size:16px;">|</span>
     <button class="btn" id="bp3" style="display:inline-flex;align-items:center;gap:5px;font-weight:500;">
       <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
@@ -2181,32 +2181,48 @@ async function loadXkt(xktBuffer, metaJson){
   }catch(e){st3('Error: '+e.message,'');console.error('[XK]',e);}
 }
 
-// Construye el mapeo contenedor↔hijos a partir de la jerarquía de metaObjects.
+// Construye el mapeo contenedor↔hijos a partir de la jerarquía de metadatos.
 // Un "contenedor" es un objeto sin geometría propia en la escena pero con hijos
 // que sí tienen geometría (caso típico: IfcCurtainWall → IfcMember/IfcPlate).
 function buildContainerIndex(){
   childToContainer={}; containerChildren={};
-  if(!xscene||!xscene.metaScene||!xscene.metaScene.metaObjects)return;
-  var mos=xscene.metaScene.metaObjects;
-  // Índice padre → hijos
-  var kids={};
-  Object.keys(mos).forEach(function(id){
-    var mo=mos[id]; var par=mo&&mo.parent;
-    // En xeokit el padre puede venir como objeto o como id
-    var parId=par&&typeof par==='object'?par.id:par;
-    if(parId){(kids[parId]=kids[parId]||[]).push(id);}
+  if(!xscene)return;
+  // Fuente de la jerarquía: _metaJson normalizado (campo parentId), que es lo
+  // que está disponible de forma fiable (xscene.metaScene puede no existir).
+  var src=(typeof _metaJson!=='undefined'&&_metaJson&&_metaJson.metaObjects)?_metaJson.metaObjects:null;
+  if(!src){
+    // Respaldo: metaScene de xeokit si existiera
+    if(xscene.metaScene&&xscene.metaScene.metaObjects){
+      var mos=xscene.metaScene.metaObjects;
+      src=Object.keys(mos).map(function(id){
+        var p=mos[id].parent; var pid=p&&typeof p==='object'?p.id:p;
+        return {id:id,parentId:pid};
+      });
+    } else return;
+  }
+  // Índice padre → hijos (admite parentId o parent) + tipo por id
+  var kids={}, typeById={};
+  src.forEach(function(o){
+    typeById[o.id]=o.type||'';
+    var parId=o.parentId||o.parent;
+    if(parId){(kids[parId]=kids[parId]||[]).push(o.id);}
   });
-  // Para cada objeto SIN geometría propia pero con hijos geométricos → contenedor
-  Object.keys(mos).forEach(function(id){
-    var hasOwnGeom=!!xscene.objects[id];
-    if(hasOwnGeom)return;                 // tiene geometría propia: no es contenedor
-    var ch=kids[id]; if(!ch||!ch.length)return;
-    // Recoger descendientes con geometría (recursivo: montantes pueden anidar)
+  // Estructura espacial: NUNCA son contenedores de geometría (si lo fueran,
+  // arrastrarían el modelo entero). Solo elementos físicos con geometría en hijos.
+  var SPATIAL={IfcProject:1,IfcSite:1,IfcBuilding:1,IfcBuildingStorey:1,
+               IfcSpace:1,IfcElementAssembly:1,IfcGroup:1,IfcZone:1};
+  // Para cada elemento físico SIN geometría propia pero con descendientes geométricos
+  src.forEach(function(o){
+    var id=o.id;
+    if(xscene.objects[id])return;          // tiene geometría propia: no es contenedor
+    if(SPATIAL[typeById[id]])return;       // nodo espacial: no agrupar geometría aquí
+    if(!kids[id]||!kids[id].length)return;
     var geomKids=[];
     (function collect(nid){
       (kids[nid]||[]).forEach(function(cid){
         if(xscene.objects[cid])geomKids.push(cid);
-        collect(cid);
+        // No descender por debajo de otros nodos espaciales
+        if(!SPATIAL[typeById[cid]])collect(cid);
       });
     })(id);
     if(geomKids.length){
@@ -2670,7 +2686,7 @@ async function applyMetaFile(file){
       console.log('[META] metaObjects after apply:',n);
 
       // Build g2asm from assembly codes in metadata
-      metaJson.objects.forEach(function(o){
+      (metaJson.metaObjects||metaJson.objects||[]).forEach(function(o){
         if(o.assemblyCode){
           g2asm[o.id]=o.assemblyCode;
           if(!asm2g[o.assemblyCode])asm2g[o.assemblyCode]=[];
@@ -2695,6 +2711,9 @@ async function applyMetaFile(file){
       });
       // Ocultar IfcSpace siempre (metadatos ya cargados, ahora es fiable)
       _hideIfcSpaces();
+      // Reconstruir mapeo contenedor↔hijos con los nuevos metadatos
+      buildContainerIndex();
+      console.log('[META] contenedores:',Object.keys(containerChildren).length);
 
       st3('Metadatos aplicados: '+n+' elementos','ok');
       // Rebuild categories panel if open
