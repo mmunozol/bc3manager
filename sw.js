@@ -1,5 +1,6 @@
-// BC3 Manager Service Worker v1
-const CACHE = 'bc3m-v1';
+// BC3 Manager Service Worker — IMPORTANTE: subir el número de CACHE en cada
+// despliegue para invalidar la caché vieja y evitar que se sirva código antiguo.
+const CACHE = 'bc3m-v2.31';
 
 self.addEventListener('install', e => {
   e.waitUntil(self.skipWaiting());
