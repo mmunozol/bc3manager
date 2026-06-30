@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache,no-store,must-revalidate">
-<!-- BC3 Manager v2.36 — layout rewrite: full-width on IFC hide, portrait fix, col swap -->
+<!-- BC3 Manager v2.37 — layout rewrite: full-width on IFC hide, portrait fix, col swap -->
 <title>BC3 Manager</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0f0f13">
@@ -452,28 +452,8 @@ html.dark .t3:hover{background:var(--bd);color:var(--text);}
 html.dark .t3.a{background:var(--acc-bg);color:var(--acc);}
 html.dark #p3d{background:#0f1117;}
 html.dark #dz{color:var(--muted);}
-html.dark .slice-panel-inner,
-html.dark #slice-panel,
-/* Panel caja de sección — adaptable light/dark */
-.sbp-card{background:rgba(255,255,255,.92);border:1px solid rgba(0,0,0,.12);box-shadow:0 8px 32px rgba(0,0,0,.18);}
-.sbp-title{color:#1f2937;}
-.sbp-muted{color:#6b7280;}
-.sbp-ico{color:#6b7280;}
-.sbp-btn{background:#f3f4f6;border:1px solid #d1d5db;color:#374151;}
-.sbp-btn:hover{background:#e5e7eb;}
-html.dark .sbp-card{background:rgba(20,22,30,.85);border-color:rgba(255,255,255,.12);box-shadow:0 8px 32px rgba(0,0,0,.4);}
-html.dark .sbp-title{color:#fff;}
-html.dark .sbp-muted{color:rgba(255,255,255,.45);}
-html.dark .sbp-ico{color:rgba(255,255,255,.7);}
-html.dark .sbp-btn{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.15);color:rgba(255,255,255,.8);}
-html.dark .sbp-btn:hover{background:rgba(255,255,255,.15);}
-.sbp-range{-webkit-appearance:none;appearance:none;height:5px;border-radius:3px;background:var(--acc);outline:none;}
-.sbp-range::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--acc);box-shadow:0 1px 3px rgba(0,0,0,.25);cursor:pointer;}
-.sbp-range::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--acc);box-shadow:0 1px 3px rgba(0,0,0,.25);cursor:pointer;}
-.sbp-range::-moz-range-track{height:5px;border-radius:3px;background:var(--acc);}
 html.dark #cats-panel,
-html.dark #views-panel,
-html.dark #secbox-panel{
+html.dark #views-panel{
   background:var(--panel)!important;
   border-color:var(--bd)!important;
   color:var(--text)!important;
@@ -572,7 +552,7 @@ html.dark .sri-snippet mark{background:rgba(59,130,246,.22);}
 <!-- HOME -->
 <div class="view active" id="v-home">
   <div class="topbar">
-    <div class="logo">BC3 <em>Manager</em> <span id="dev-ind" style="font-size:9px;color:var(--muted);font-weight:400;margin-left:4px;">v2.36</span></div>
+    <div class="logo">BC3 <em>Manager</em> <span id="dev-ind" style="font-size:9px;color:var(--muted);font-weight:400;margin-left:4px;">v2.37</span></div>
     <div class="tr">
       <input type="file" id="fimport-home" style="position:absolute;left:-9999px;" accept=".bc3m">
       <input type="file" id="f-restore" style="position:absolute;left:-9999px;" accept=".bc3mbackup,.json,application/octet-stream,application/json,*/*">
@@ -596,7 +576,7 @@ html.dark .sri-snippet mark{background:rgba(59,130,246,.22);}
 <!-- PROYECTO -->
 <div class="view" id="v-proj">
   <div class="topbar">
-    <div class="logo">BC3 <em>Manager</em> <span style="font-size:9px;color:var(--muted);font-weight:400;margin-left:4px;">v2.36</span></div>
+    <div class="logo">BC3 <em>Manager</em> <span style="font-size:9px;color:var(--muted);font-weight:400;margin-left:4px;">v2.37</span></div>
     <span style="color:var(--bd2);font-size:16px;">|</span>
     <button class="btn" id="bh2" style="display:inline-flex;align-items:center;gap:5px;font-weight:500;">
       <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
@@ -626,7 +606,7 @@ html.dark .sri-snippet mark{background:rgba(59,130,246,.22);}
 <!-- VISOR -->
 <div class="view" id="v-visor">
   <div class="topbar">
-    <div class="logo">BC3 <em>Manager</em> <span style="font-size:9px;color:var(--muted);font-weight:400;margin-left:2px;">v2.36</span></div>
+    <div class="logo">BC3 <em>Manager</em> <span style="font-size:9px;color:var(--muted);font-weight:400;margin-left:2px;">v2.37</span></div>
     <span style="color:var(--bd2);font-size:16px;">|</span>
     <button class="btn" id="bp3" style="display:inline-flex;align-items:center;gap:5px;font-weight:500;">
       <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
@@ -699,8 +679,7 @@ html.dark .sri-snippet mark{background:rgba(59,130,246,.22);}
           <button class="t3" id="bn-ghost" title="Modo fantasma / XRay" style="padding:7px;"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg></button>
           <button class="t3" id="bn-iso" title="Aislar selección" style="padding:7px;"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="9" stroke-dasharray="3 2"/></svg></button>
           <button class="t3" id="bn-clr" title="Limpiar todo" style="padding:7px;"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-          <button class="t3" id="bn-secbox" title="Caja de sección" style="padding:7px;"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></button>
-          <button class="t3" id="bn-secplane" title="Plano de sección (pincha un muro)" style="padding:7px;"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l18-4v12L3 20z"/><line x1="3" y1="8" x2="3" y2="20"/></svg></button>
+          <button class="t3" id="bn-secplane" title="Sección por muro (pincha un muro)" style="padding:7px;"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l18-4v12L3 20z"/><line x1="3" y1="8" x2="3" y2="20"/></svg></button>
           <button class="t3" id="bn-cats" title="Categorías" style="padding:7px;"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></button>
           <button class="t3" id="bn-views" title="Vistas guardadas" style="padding:7px;"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h2l2-3h6l2 3h2a1 1 0 011 1v11a1 1 0 01-1 1H5a1 1 0 01-1-1V8a1 1 0 011-1z"/><circle cx="12" cy="13" r="3.5"/></svg></button>
         </div>
@@ -718,40 +697,6 @@ html.dark .sri-snippet mark{background:rgba(59,130,246,.22);}
           <div id="hcp" style="color:#6b7280;font-size:9px;margin-top:1px;"></div>
         </div>
         <div id="pg" style="position:absolute;top:0;left:0;height:2px;background:var(--acc);width:0%;transition:width .3s;display:none;z-index:20;"></div>
-        <!-- Sección -->
-        <!-- Caja de sección -->
-        <div id="secbox-panel" style="display:none;position:absolute;bottom:calc(16px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);z-index:30;min-width:560px;max-width:820px;width:70%;">
-          <div class="sbp-card" style="backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:12px;padding:14px 18px;">
-            <!-- Header -->
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
-              <svg viewBox="0 0 20 20" width="14" height="14" fill="none" class="sbp-ico" stroke="currentColor" stroke-width="1.6"><path d="M10 2L2 6v8l8 4 8-4V6L10 2z"/><path d="M2 6l8 4m0 0l8-4m-8 4v8"/></svg>
-              <span class="sbp-title" style="font-size:12px;font-weight:700;flex:1;letter-spacing:.02em;">Caja de sección</span>
-              <button id="sb-hide" title="Ocultar caja" class="sbp-btn" style="border-radius:6px;cursor:pointer;padding:4px 10px;display:flex;align-items:center;gap:5px;font-size:11px;">
-                <svg viewBox="0 0 20 20" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M1 10s3-6 9-6 9 6 9 6-3 6-9 6-9-6-9-6z"/><circle cx="10" cy="10" r="3"/><line x1="3" y1="3" x2="17" y2="17"/></svg>
-                Ocultar
-              </button>
-              <button id="sb-align" title="Alinear caja con una cara del modelo (clic en un muro)" style="background:var(--acc);border:none;border-radius:6px;cursor:pointer;padding:4px 10px;display:flex;align-items:center;gap:5px;color:#fff;font-size:11px;font-weight:600;">
-                <svg viewBox="0 0 20 20" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="14" height="14" rx="1" transform="rotate(12 10 10)"/><path d="M10 1v4M10 15v4M1 10h4M15 10h4"/></svg>
-                Alinear
-              </button>
-              <button id="sb-reset" title="Resetear caja" class="sbp-btn" style="border-radius:6px;cursor:pointer;padding:4px 10px;display:flex;align-items:center;gap:5px;font-size:11px;">
-                <svg viewBox="0 0 20 20" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 4v5h5M16 16v-5h-5"/><path d="M4.93 9A8 8 0 1115 15.07"/></svg>
-                Reset
-              </button>
-              <button id="secbox-off" title="Cerrar" class="sbp-btn" style="border-radius:6px;cursor:pointer;padding:4px 7px;display:flex;align-items:center;">
-                <svg viewBox="0 0 20 20" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="4" y1="4" x2="16" y2="16"/><line x1="16" y1="4" x2="4" y2="16"/></svg>
-              </button>
-            </div>
-            <!-- Control de traslación de cara -->
-            <div style="display:flex;align-items:center;gap:10px;">
-              <span class="sbp-muted" style="font-size:10px;font-weight:600;white-space:nowrap;">Cara</span>
-              <span class="sbp-title" style="font-size:11px;font-weight:700;white-space:nowrap;min-width:34px;" id="sb-face-label">—</span>
-              <input type="range" id="sb-face-slider" class="sbp-range" min="0" max="100" value="0" style="flex:1;cursor:pointer;">
-              <span class="sbp-muted" style="font-size:10px;white-space:nowrap;" id="sb-align-hint"></span>
-            </div>
-          </div>
-        </div>
-        <!-- fin secbox-panel -->
         <!-- Plantas -->
         <div id="cats-panel" style="display:none;position:absolute;top:44px;right:8px;width:232px;max-height:min(60vh,440px);background:rgba(255,255,255,.97);border:1px solid rgba(0,0,0,.12);border-radius:10px;z-index:29;flex-direction:column;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.15);">
           <div style="padding:8px 12px;border-bottom:1px solid #eee;display:flex;justify-content:space-between;align-items:center;">
@@ -1979,12 +1924,16 @@ async function initXeokit(){
       });
     }
     xscene=xv.scene;
-    _sbInitCanvasEvents();
     // Material fantasma: gris claro, 10% opacidad
     _updateXrayTheme();
+    // Ajustes de fluidez (como el xeokit-bim-viewer oficial: 60fps estables)
     xv.cameraControl.navMode='orbit';
     xv.cameraControl.followPointer=true;
     xv.cameraControl.doublePickFlyTo=true;
+    xv.cameraControl.smartPivot=true;       // pivote inteligente al orbitar
+    xv.cameraControl.rotationInertia=0;     // respuesta inmediata, sin "patinar"
+    xv.cameraControl.panInertia=0.5;
+    try{xscene.pbrEnabled=false;}catch(e){} // PBR off: mucho más ligero
     xscene.clearLights();
     new XK.AmbientLight(xscene,{color:[1,1,1],intensity:0.4});
     new XK.DirLight(xscene,{dir:[0.8,-0.6,-0.4],color:[1,1,1],intensity:0.7,space:'world'});
@@ -2001,13 +1950,9 @@ async function initXeokit(){
         }
         return; // en modo plano no hacemos selección normal
       }
-      // La caja de sección tiene prioridad (alinear / seleccionar cara) — clave para táctil
-      if(typeof _sbHandleCanvasTap==='function'&&_sbHandleCanvasTap(canvasPos))return;
       var hit=xv.scene.pick({canvasPos:canvasPos});
       if(!hit||!hit.entity)return;
       var entityId=hit.entity.id;
-      // Ignorar meshes de la caja de sección (los gestiona _sbInitCanvasEvents)
-      if(entityId&&(entityId.indexOf('sb_face_')===0||entityId==='sb_wire'))return;
 
       xscene.setObjectsSelected(xscene.selectedObjectIds,false);
       hit.entity.selected=true;
@@ -2794,57 +2739,11 @@ async function applyMetaFile(file){
 
 // ── SECCIÓN, PLANTAS Y MEDICIÓN ─────────────────────────────────────────
 var xSection=null, xSectionPlugin=null;
-// ── CAJA DE SECCIÓN FÍSICA (optimizada: geometría creada 1 vez) ──────────
-var _sb={
-  active:false,
-  planes:{xmin:null,xmax:null,ymin:null,ymax:null,zmin:null,zmax:null},
-  meshWire:null, meshFaces:[],
-  box:null,   // AABB base (fijo durante la sesión)
-  cur:null,   // coordenadas actuales de cada cara (local, sin rotar)
-  rot:{x:0,y:0,z:0}
-};
-var _sbHoverFace=null, _sbSelFace=null;
-var _SB_OPP={xmin:'xmax',xmax:'xmin',ymin:'ymax',ymax:'ymin',zmin:'zmax',zmax:'zmin'};
-var _SB_NLOCAL={xmin:[-1,0,0],xmax:[1,0,0],ymin:[0,-1,0],ymax:[0,1,0],zmin:[0,0,-1],zmax:[0,0,1]};
-
-// ── PLANO DE SECCIÓN ALINEADO AL MURO (prototipo, ligero) ──────────────────
-// Usa SectionPlanesPlugin nativo: un solo plano por clic, con la normal de la
-// cara pinchada → queda paralelo al muro aunque el modelo esté girado N-S.
-var _spMode=false;        // modo activo: el próximo clic crea el plano
-var _spPlane=null;        // plano de sección actual (uno solo)
-function spToggle(){
-  if(!xv||!xscene)return;
-  initSectionPlugin();if(!xSectionPlugin)return;
-  // Si hay caja de sección activa, cerrarla (no mezclar modos)
-  if(_sb.active)sbClose();
-  _spMode=!_spMode;
-  el('bn-secplane').classList.toggle('a',_spMode);
-  if(_spMode){
-    st3('Pincha la cara de un muro para cortar paralelo a él','sp');
-  } else {
-    st3('',''); 
-  }
-}
-function spCreateAt(worldPos,worldNormal){
-  initSectionPlugin();if(!xSectionPlugin)return;
-  var XK=window._XK;
-  // Eliminar el plano anterior (mantener uno solo, ágil)
-  if(_spPlane){try{xSectionPlugin.destroySectionPlane('sp_wall');}catch(e){}_spPlane=null;}
-  // dir = normal de la cara, invertida (corta hacia el interior, como el oficial)
-  var dir=XK.math.mulVec3Scalar(worldNormal.slice(),-1);
-  _spPlane=xSectionPlugin.createSectionPlane({id:'sp_wall',pos:worldPos.slice(),dir:dir});
-  try{xSectionPlugin.showControl('sp_wall');}catch(e){}
-  _spMode=false; // tras crear, salir del modo (el control queda para ajustar)
-  el('bn-secplane').classList.remove('a');
-  st3('Plano de sección creado · arrastra el control para ajustar','ok');
-}
-function spClear(){
-  if(_spPlane){try{xSectionPlugin.destroySectionPlane('sp_wall');}catch(e){}_spPlane=null;}
-  try{xSectionPlugin.hideControl();}catch(e){}
-  _spMode=false;
-  var b=el('bn-secplane');if(b)b.classList.remove('a');
-}
-
+// ── PLANO DE SECCIÓN ALINEADO AL MURO ──────────────────────────────────────
+// SectionPlanesPlugin nativo: un solo plano por clic, con la normal de la cara
+// pinchada → queda paralelo al muro aunque el modelo esté girado N-S. Ligero.
+// Flujo: pulsar botón → modo "pincha muro" → al pinchar se crea el plano y se
+// muestra el control para moverlo → pulsar botón de nuevo restablece (sin corte).
 function initSectionPlugin(){
   if(xSectionPlugin)return;
   var XK=window._XK;
@@ -2852,297 +2751,43 @@ function initSectionPlugin(){
   xSectionPlugin=new XK.SectionPlanesPlugin(xv,{overviewCanvasId:null,overviewVisible:false});
 }
 
-function sbOpen(){
+var _spMode=false;        // esperando clic en muro para crear el plano
+var _spPlane=null;        // plano de sección actual (uno solo)
+
+// El botón actúa como activar/desactivar:
+//  - sin plano y sin modo → entra en modo "pincha un muro"
+//  - en modo o con plano   → restablece (quita corte, vuelve a normal)
+function spToggle(){
   if(!xv||!xscene)return;
   initSectionPlugin();if(!xSectionPlugin)return;
-  if(_sb.active)sbClose();
-  var aabb=xModel?xModel.aabb:xscene.aabb;
-  _sb.box={xmin:aabb[0],xmax:aabb[3],ymin:aabb[1],ymax:aabb[4],zmin:aabb[2],zmax:aabb[5]};
-  _sb.rot={x:0,y:0,z:0};
-  var saved=_sbLoadPos();
-  if(saved&&saved.cur){_sb.cur=saved.cur;_sb.rot=saved.rot||{x:0,y:0,z:0};if(saved.box)_sb.box=saved.box;}
-  else _sb.cur=Object.assign({},_sb.box);
-  _sbCreateSceneObjects();
-  _sbApply();
-  _sb.active=true;
-  el('secbox-panel').style.display='block';
-  el('bn-secbox').classList.add('a');
-  var btnH=el('sb-hide');
-  if(btnH){
-    btnH.dataset.boxVisible='1';
-    var txt=btnH.childNodes[btnH.childNodes.length-1];
-    if(txt&&txt.nodeType===3)txt.textContent=' Ocultar';
-  }
-  _sbSyncRotSliders();
-  setTimeout(function(){_sbSelectFace('ymax');},50);
-}
-
-function sbClose(){
-  if(_sb.active&&_sb.box&&_sb.cur){try{_sbSavePos();}catch(e){}}
-  var cv0=el('cv');if(cv0)cv0.style.cursor='';
-  Object.keys(_sb.planes).forEach(function(k){
-    if(_sb.planes[k]){try{xSectionPlugin.destroySectionPlane('sb_'+k);}catch(e){}}_sb.planes[k]=null;
-  });
-  if(_sb.meshWire){try{_sb.meshWire.destroy();}catch(e){}}_sb.meshWire=null;
-  _sb.meshFaces.forEach(function(m){try{m.destroy();}catch(e){}});
-  _sb.meshFaces=[];
-  _sbSelFace=null;_sbHoverFace=null;
-  if(typeof _sbSetAlignMode==='function')_sbSetAlignMode(false);
-  _sb.active=false;
-  el('secbox-panel').style.display='none';
-  el('bn-secbox').classList.remove('a');
-}
-
-// Crea los 6 planos + wireframe + 6 caras UNA VEZ con geometría unitaria
-function _sbCreateSceneObjects(){
-  var XK=window._XK;if(!XK)return;
-  // Limpiar restos
-  Object.keys(_sb.planes).forEach(function(k){
-    if(_sb.planes[k]){try{xSectionPlugin.destroySectionPlane('sb_'+k);}catch(e){}}_sb.planes[k]=null;
-  });
-  if(_sb.meshWire){try{_sb.meshWire.destroy();}catch(e){}}_sb.meshWire=null;
-  _sb.meshFaces.forEach(function(m){try{m.destroy();}catch(e){}});_sb.meshFaces=[];
-
-  // 6 planos de sección (pos/dir se actualizan en _sbApply)
-  Object.keys(_SB_NLOCAL).forEach(function(k){
-    _sb.planes[k]=xSectionPlugin.createSectionPlane({id:'sb_'+k,pos:[0,0,0],dir:[0,1,0]});
-  });
-
-  if(!(XK.VBOGeometry&&XK.Mesh&&XK.PhongMaterial))return;
-
-  // Wireframe: cubo unitario centrado en origen (escala/posición vía transform)
-  try{
-    var v=0.5;
-    var verts=[-v,-v,-v, v,-v,-v, v,-v,v, -v,-v,v, -v,v,-v, v,v,-v, v,v,v, -v,v,v];
-    var edges=[0,1,1,2,2,3,3,0, 4,5,5,6,6,7,7,4, 0,4,1,5,2,6,3,7];
-    var wg=new XK.VBOGeometry(xscene,{primitive:'lines',positions:verts,indices:edges});
-    var wm=new XK.PhongMaterial(xscene,{emissive:[0.2,0.6,1],lineWidth:2});
-    _sb.meshWire=new XK.Mesh(xscene,{id:'sb_wire',geometry:wg,material:wm,pickable:false,collidable:false,clippable:false});
-  }catch(e){console.warn('[SB] wire:',e);}
-
-  // 6 caras del cubo unitario — comparten transform con el wireframe
-  var faceVerts={
-    xmin:[-v,-v,-v, -v,-v,v, -v,v,v, -v,v,-v],
-    xmax:[ v,-v,-v,  v,v,-v,  v,v,v,  v,-v,v],
-    ymin:[-v,-v,-v,  v,-v,-v, v,-v,v, -v,-v,v],
-    ymax:[-v,v,-v,  -v,v,v,   v,v,v,   v,v,-v],
-    zmin:[-v,-v,-v, -v,v,-v,  v,v,-v,  v,-v,-v],
-    zmax:[-v,-v,v,   v,-v,v,  v,v,v,  -v,v,v]
-  };
-  Object.keys(faceVerts).forEach(function(k){
-    try{
-      var n=_SB_NLOCAL[k];
-      var ns=[].concat(n,n,n,n);
-      var g=new XK.VBOGeometry(xscene,{primitive:'triangles',positions:faceVerts[k],indices:[0,1,2,0,2,3],normals:ns});
-      var m2=new XK.PhongMaterial(xscene,{diffuse:[0.3,0.6,1],alpha:0.08,backfaces:true});
-      var mesh=new XK.Mesh(xscene,{id:'sb_face_'+k,geometry:g,material:m2,pickable:true,collidable:false,clippable:false});
-      _sb.meshFaces.push(mesh);
-    }catch(e){console.warn('[SB] face:',e);}
-  });
-}
-
-// Aplica el estado actual (cur + rot) a meshes y planos — SIN crear geometría
-function _sbApply(){
-  if(!_sb.box||!_sb.cur)return;
-  var b=_sb.box,c=_sb.cur;
-  var ry=(_sb.rot.y||0)*Math.PI/180;
-  var cy=Math.cos(ry),sy=Math.sin(ry);
-  // Pivote de rotación: centro del box base
-  var pv=[(b.xmin+b.xmax)/2,(b.ymin+b.ymax)/2,(b.zmin+b.zmax)/2];
-  function l2w(p){
-    var dx=p[0]-pv[0],dz=p[2]-pv[2];
-    return[pv[0]+dx*cy+dz*sy, p[1], pv[2]-dx*sy+dz*cy];
-  }
-  function rotV(nv){return[nv[0]*cy+nv[2]*sy, nv[1], -nv[0]*sy+nv[2]*cy];}
-
-  var sx=c.xmax-c.xmin, syy=c.ymax-c.ymin, sz=c.zmax-c.zmin;
-  var lc=[(c.xmin+c.xmax)/2,(c.ymin+c.ymax)/2,(c.zmin+c.zmax)/2];
-  var wc=l2w(lc);
-  var rotDeg=[0,(_sb.rot.y||0),0];
-
-  // Actualizar meshes (transform in-place — barato)
-  if(_sb.meshWire){
-    _sb.meshWire.position=wc;
-    _sb.meshWire.scale=[sx,syy,sz];
-    _sb.meshWire.rotation=rotDeg;
-  }
-  _sb.meshFaces.forEach(function(m){
-    m.position=wc;
-    m.scale=[sx,syy,sz];
-    m.rotation=rotDeg;
-  });
-
-  // Actualizar planos (pos/dir in-place) + activar solo los necesarios
-  var rotActive=Math.abs(_sb.rot.y||0)>0.01;
-  Object.keys(_SB_NLOCAL).forEach(function(k){
-    var plane=_sb.planes[k];if(!plane)return;
-    var axis=k.charAt(0);
-    var faceCtr;
-    if(axis==='x')faceCtr=[c[k],lc[1],lc[2]];
-    else if(axis==='y')faceCtr=[lc[0],c[k],lc[2]];
-    else faceCtr=[lc[0],lc[1],c[k]];
-    plane.pos=l2w(faceCtr);
-    var nW=rotV(_SB_NLOCAL[k]);
-    plane.dir=[-nW[0],-nW[1],-nW[2]]; // hacia el interior
-    var moved=Math.abs(c[k]-b[k])>0.001;
-    plane.active=moved||rotActive;
-  });
-}
-var sbUpdate=_sbApply; // compatibilidad
-
-function _sbSetFaceHighlight(faceId,on){
-  _sb.meshFaces.forEach(function(m){
-    // Limpiar selected nativo de xeokit si quedó marcado
-    if(m.selected)m.selected=false;
-    if(on&&m.id!=='sb_face_'+faceId){m.material.diffuse=[0.3,0.6,1];m.material.alpha=0.08;}
-    if(m.id==='sb_face_'+faceId){
-      m.material.diffuse=on?[0.16,0.45,0.94]:[0.3,0.6,1]; // azul interfaz
-      m.material.alpha=on?0.3:0.08;
-    }
-  });
-}
-
-function _sbSelectFace(faceId){
-  if(!_sb.box||!_sb.cur)return;
-  if(_sbSelFace&&_sbSelFace!==faceId)_sbSetFaceHighlight(_sbSelFace,false);
-  _sbSelFace=faceId;
-  _sbSetFaceHighlight(faceId,true);
-  var lbl=el('sb-face-label');
-  var names={xmin:'−X',xmax:'+X',ymin:'−Y',ymax:'+Y',zmin:'−Z',zmax:'+Z'};
-  if(lbl)lbl.textContent=names[faceId]||faceId;
-  // Slider: reflejar posición actual de la cara
-  var sl=el('sb-face-slider');
-  if(sl){
-    sl.dataset.faceId=faceId;
-    var b=_sb.box,c=_sb.cur,o=_SB_OPP[faceId];
-    var denom=(c[o]-b[faceId])*0.95;
-    var t=denom!==0?(c[faceId]-b[faceId])/denom:0;
-    sl.value=Math.round(Math.max(0,Math.min(100,t*100)));
+  if(_spMode||_spPlane){
+    spClear();
+    st3('','');
+  } else {
+    _spMode=true;
+    el('bn-secplane').classList.add('a');
+    st3('Pincha la cara de un muro para cortar paralelo a él','sp');
   }
 }
 
-function _sbSliderChange(pct){
-  if(!_sb.box||!_sb.cur)return;
-  var sl=el('sb-face-slider');if(!sl)return;
-  var faceId=sl.dataset.faceId;if(!faceId)return;
-  var b=_sb.box,c=_sb.cur,o=_SB_OPP[faceId];
-  var t=(pct/100)*0.95;
-  c[faceId]=b[faceId]+t*(c[o]-b[faceId]);
-  _sbApply();
+function spCreateAt(worldPos,worldNormal){
+  initSectionPlugin();if(!xSectionPlugin)return;
+  var XK=window._XK;
+  if(_spPlane){try{xSectionPlugin.destroySectionPlane('sp_wall');}catch(e){}_spPlane=null;}
+  // dir = normal de la cara invertida (corta hacia dentro, como el oficial xeokit)
+  var dir=XK.math.mulVec3Scalar(worldNormal.slice(),-1);
+  _spPlane=xSectionPlugin.createSectionPlane({id:'sp_wall',pos:worldPos.slice(),dir:dir});
+  try{xSectionPlugin.showControl('sp_wall');}catch(e){}
+  _spMode=false;                       // ya creado: salimos del modo "pincha"
+  el('bn-secplane').classList.add('a'); // botón queda activo (hay corte) → re-pulsar restablece
+  st3('Plano de sección activo · arrastra el control para moverlo · pulsa el botón para quitarlo','ok');
 }
 
-// Gestiona un tap/click del canvas para la caja de sección (mouse y táctil)
-// Devuelve true si el evento fue consumido por la caja
-function _sbHandleCanvasTap(canvasPos){
-  if(!_sb.active)return false;
-  try{return _sbHandleCanvasTapInner(canvasPos);}catch(e){console.warn('[SB] tap:',e);return false;}
-}
-function _sbHandleCanvasTapInner(canvasPos){
-  // Modo alinear: pick de superficie sobre el modelo
-  if(_sbAlignMode){
-    var hitS=xv.scene.pick({canvasPos:canvasPos,pickSurface:true});
-    if(hitS&&hitS.worldNormal&&hitS.entity&&hitS.entity.id&&hitS.entity.id.indexOf('sb_')!==0){
-      var n=hitS.worldNormal;
-      var hLen=Math.sqrt(n[0]*n[0]+n[2]*n[2]);
-      if(hLen<0.3){
-        st3('Selecciona una cara vertical (muro)','sp');
-      } else {
-        var deg=Math.atan2(-n[2]/hLen,n[0]/hLen)*180/Math.PI;
-        deg=((deg%90)+90)%90;
-        _sb.rot.y=Math.round(deg*10)/10;
-        _sbApply();
-        _sbSavePos();
-        st3('Caja alineada ('+_sb.rot.y+'°)','ok');
-      }
-      _sbSetAlignMode(false);
-      return true;
-    }
-    _sbSetAlignMode(false);
-    return true;
-  }
-  // Selección de cara de la caja
-  var hit=xv.scene.pick({canvasPos:canvasPos});
-  if(hit&&hit.entity&&hit.entity.id&&hit.entity.id.indexOf('sb_face_')===0){
-    _sbSelectFace(hit.entity.id.replace('sb_face_',''));
-    return true;
-  }
-  return false;
-}
-
-var _sbPickT=0;
-function _sbInitCanvasEvents(){
-  var cv=el('cv');if(!cv)return;
-  cv.addEventListener('mousemove',function(e){
-    if(!_sb.active)return;
-    // Solo hacer pick si la caja está visible (es la operación más cara)
-    if(!_sb.meshFaces.length||!_sb.meshFaces[0].visible)return;
-    var now=Date.now();
-    if(now-_sbPickT<100)return; // throttle pick
-    _sbPickT=now;
-    var hit=xv.scene.pick({canvasPos:[e.offsetX,e.offsetY]});
-    var faceId=hit&&hit.entity&&hit.entity.id&&hit.entity.id.startsWith('sb_face_')
-               ?hit.entity.id.replace('sb_face_',''):null;
-    if(faceId!==_sbHoverFace){
-      if(_sbHoverFace&&_sbHoverFace!==_sbSelFace)_sbSetFaceHighlight(_sbHoverFace,false);
-      if(faceId&&faceId!==_sbSelFace)_sbSetFaceHighlight(faceId,true);
-      if(_sbSelFace)_sbSetFaceHighlight(_sbSelFace,true);
-      _sbHoverFace=faceId;
-      cv.style.cursor=faceId?'pointer':'';
-    }
-  });
-  cv.addEventListener('click',function(e){
-    if(!_sb.active)return;
-    if(_sbHandleCanvasTap([e.offsetX,e.offsetY])){e.stopPropagation();}
-  },{capture:true});
-}
-
-function sbReset(){
-  if(!_sb.box)return;
-  _sb.cur=Object.assign({},_sb.box);
-  _sb.rot={x:0,y:0,z:0};
-  _sbSyncRotSliders();
-  if(_sb.meshWire)_sb.meshWire.visible=true;
-  _sb.meshFaces.forEach(function(m){m.visible=true;m.pickable=true;});
-  var btnH=el('sb-hide');
-  if(btnH){
-    btnH.dataset.boxVisible='1';
-    var txt=btnH.childNodes[btnH.childNodes.length-1];
-    if(txt&&txt.nodeType===3)txt.textContent=' Ocultar';
-  }
-  _sbApply();
-  _sbSelectFace(_sbSelFace||'ymax');
-}
-
-function _sbSyncRotSliders(){
-  var rot=_sb.rot||{x:0,y:0,z:0};
-  var sl=el('sb-rot-y');var vl=el('sb-rot-y-val');
-  if(sl)sl.value=rot.y||0;
-  if(vl)vl.textContent=(rot.y||0)+'°';
-}
-
-function _sbRotate(axis,deg){
-  if(!_sb.rot)_sb.rot={x:0,y:0,z:0};
-  _sb.rot[axis]=parseInt(deg);
-  var vl=el('sb-rot-'+axis+'-val');
-  if(vl)vl.textContent=deg+'°';
-  _sbApply();
-}
-
-// Persistencia por versión
-function _sbSaveKey(){return'sb_pos_'+(curVR||'default');}
-
-function _sbSavePos(){
-  try{
-    localStorage.setItem(_sbSaveKey(),JSON.stringify({box:_sb.box,cur:_sb.cur,rot:_sb.rot}));
-    st3('Posición de caja guardada','ok');
-  }catch(e){st3('Error al guardar','');}
-}
-
-function _sbLoadPos(){
-  try{
-    var s=localStorage.getItem(_sbSaveKey());
-    return s?JSON.parse(s):null;
-  }catch(e){return null;}
+function spClear(){
+  if(_spPlane){try{xSectionPlugin.destroySectionPlane('sp_wall');}catch(e){}_spPlane=null;}
+  if(xSectionPlugin){try{xSectionPlugin.hideControl();}catch(e){}}
+  _spMode=false;
+  var b=el('bn-secplane');if(b)b.classList.remove('a');
 }
 
 
@@ -3963,49 +3608,9 @@ on('ms-clr','click',function(){
   if(bi&&bi.classList.contains('a')){showAll();bi.classList.remove('a');}
   clrHL();
 });
-on('bn-secbox','click',function(){if(_sb.active)sbClose();else{spClear();sbOpen();}});
 on('bn-secplane','click',spToggle);
-on('secbox-off','click',function(){sbClose();});
-on('sb-reset','click',function(){sbReset();_sbSavePos();});
-var _sbAlignMode=false;
-var _sbAlignPrevHidden=false;
 
-function _sbSetAlignMode(onOff){
-  _sbAlignMode=onOff;
-  var btn=el('sb-align');
-  if(btn)btn.style.background=onOff?'#e67e22':'var(--acc)';
-  var hint=el('sb-align-hint');
-  if(hint)hint.textContent=onOff?'Clic en la cara de un muro…':'';
-  var cv=el('cv');if(cv)cv.style.cursor=onOff?'crosshair':'';
-  // Ocultar caja durante el pick para que no intercepte el click
-  var btnH=el('sb-hide');
-  if(onOff){
-    _sbAlignPrevHidden=!!(btnH&&btnH.dataset.boxVisible==='0');
-    if(_sb.meshWire)_sb.meshWire.visible=false;
-    _sb.meshFaces.forEach(function(m){m.visible=false;m.pickable=false;});
-  } else {
-    // Restaurar solo si el usuario no la tenía oculta manualmente
-    if(!_sbAlignPrevHidden){
-      if(_sb.meshWire)_sb.meshWire.visible=true;
-      _sb.meshFaces.forEach(function(m){m.visible=true;m.pickable=true;});
-    }
-  }
-}
-on('sb-align','click',function(){_sbSetAlignMode(!_sbAlignMode);});
-on('sb-hide','click',function(){
-  // Flag de estado: visible por defecto
-  var isVisible=this.dataset.boxVisible!=='0';
-  var newVisible=!isVisible;
-  if(_sb.meshWire)_sb.meshWire.visible=newVisible;
-  _sb.meshFaces.forEach(function(m){m.visible=newVisible;m.pickable=newVisible;});
-  this.dataset.boxVisible=newVisible?'1':'0';
-  // Actualizar solo el nodo de texto (preservar SVG)
-  var txt=this.childNodes[this.childNodes.length-1];
-  if(txt&&txt.nodeType===3)txt.textContent=newVisible?' Ocultar':' Mostrar';
-});
-
-var _sbSl=el('sb-face-slider');
-if(_sbSl)_sbSl.addEventListener('input',function(){_sbSliderChange(parseInt(this.value));});
+var _sbSl=null;
 function _togglePopup(panelId,btn,builder){
   var p=el(panelId);if(!p)return;
   var open=(p.style.display==='flex');
