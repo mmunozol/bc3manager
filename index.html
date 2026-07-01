@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache,no-store,must-revalidate">
-<!-- BC3 Manager v2.40 — layout rewrite: full-width on IFC hide, portrait fix, col swap -->
+<!-- BC3 Manager v2.41 — layout rewrite: full-width on IFC hide, portrait fix, col swap -->
 <title>BC3 Manager</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0f0f13">
@@ -552,7 +552,7 @@ html.dark .sri-snippet mark{background:rgba(59,130,246,.22);}
 <!-- HOME -->
 <div class="view active" id="v-home">
   <div class="topbar">
-    <div class="logo">BC3 <em>Manager</em> <span id="dev-ind" style="font-size:9px;color:var(--muted);font-weight:400;margin-left:4px;">v2.40</span></div>
+    <div class="logo">BC3 <em>Manager</em> <span id="dev-ind" style="font-size:9px;color:var(--muted);font-weight:400;margin-left:4px;">v2.41</span></div>
     <div class="tr">
       <input type="file" id="fimport-home" style="position:absolute;left:-9999px;" accept=".bc3m">
       <input type="file" id="f-restore" style="position:absolute;left:-9999px;" accept=".bc3mbackup,.json,application/octet-stream,application/json,*/*">
@@ -576,7 +576,7 @@ html.dark .sri-snippet mark{background:rgba(59,130,246,.22);}
 <!-- PROYECTO -->
 <div class="view" id="v-proj">
   <div class="topbar">
-    <div class="logo">BC3 <em>Manager</em> <span style="font-size:9px;color:var(--muted);font-weight:400;margin-left:4px;">v2.40</span></div>
+    <div class="logo">BC3 <em>Manager</em> <span style="font-size:9px;color:var(--muted);font-weight:400;margin-left:4px;">v2.41</span></div>
     <span style="color:var(--bd2);font-size:16px;">|</span>
     <button class="btn" id="bh2" style="display:inline-flex;align-items:center;gap:5px;font-weight:500;">
       <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
@@ -606,7 +606,7 @@ html.dark .sri-snippet mark{background:rgba(59,130,246,.22);}
 <!-- VISOR -->
 <div class="view" id="v-visor">
   <div class="topbar">
-    <div class="logo">BC3 <em>Manager</em> <span style="font-size:9px;color:var(--muted);font-weight:400;margin-left:2px;">v2.40</span></div>
+    <div class="logo">BC3 <em>Manager</em> <span style="font-size:9px;color:var(--muted);font-weight:400;margin-left:2px;">v2.41</span></div>
     <span style="color:var(--bd2);font-size:16px;">|</span>
     <button class="btn" id="bp3" style="display:inline-flex;align-items:center;gap:5px;font-weight:500;">
       <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
@@ -1126,7 +1126,7 @@ function dbA(s,cb){openDB(function(d){var r=d.transaction(s,'readonly').objectSt
 function dbD(s,k,cb){openDB(function(d){var tx=d.transaction(s,'readwrite');tx.objectStore(s).delete(k);if(cb)tx.oncomplete=cb;});}
 
 // ── Variables globales ────────────────────────────────────────────────────
-var curPJ=null, curVR=null, curBC=null, selP=null, curDT='bim';
+var curPJ=null, curVR=null, curBC=null, selP=null, selPar=null, curDT='bim';
 var selMs=new Set(); // multi-selección de partidas
 var nvF=null;
 var xv=null, xModel=null;
@@ -1442,7 +1442,7 @@ function pM(BC,s,asmRE,ifc22RE){
     var hayValor=(nd||L||A||H);
     var parc=hayValor?(nd||1)*(L||1)*(A||1)*(H||1):0;
     if(txt||nd||L||A||H){
-      BC.m[code].push({txt:txt,nd:nd,a:L,b:A,h:H,parc:parc});
+      BC.m[code].push({txt:txt,nd:nd,a:L,b:A,h:H,parc:parc,par:parent});
       var m22=ifc22RE.exec(txt);
       if(m22){var esp=txt.slice(0,txt.lastIndexOf(m22[0])).replace(/[\s\-\[\]]+$/,'').trim();
         BC.g[code].push({ifc22:m22[1],esp:esp,type:'ifc22',par:parent});}
@@ -1600,7 +1600,7 @@ function renderTree(){
       // Select partida
       document.querySelectorAll('.tn').forEach(function(n){n.classList.remove('s');});
       row.classList.add('s');
-      selP=code;renderDet();
+      selP=code;selPar=row.dataset.par||'';renderDet();
       if(xv&&curBC)hlPart(code,curBC,row.dataset.par||'');
     });
     var wrap=document.createElement('div');
@@ -1731,6 +1731,18 @@ function filterTree(q){
 }
 
 // ── DETALLE ───────────────────────────────────────────────────────────────
+// Devuelve las líneas de medición de un código, filtradas por el capítulo
+// seleccionado (selPar). Una misma partida repetida en varios capítulos tiene
+// mediciones distintas por capítulo — así se muestran separadas como en Presto.
+function medsDe(code){
+  var all=(curBC&&curBC.m&&curBC.m[code])?curBC.m[code]:[];
+  if(selPar==null||selPar===''||!all.length)return all;
+  // Si las líneas tienen 'par', filtrar; si ninguna lo tiene (dato antiguo), todas
+  var conPar=all.filter(function(r){return r.par!==undefined;});
+  if(!conPar.length)return all;
+  var f=all.filter(function(r){return r.par===selPar;});
+  return f.length?f:all;
+}
 function renderDet(){if(curDT==='bim')rBIM();else if(curDT==='med')rMED();else if(curDT==='des')rDES();else rTXT();}
 
 function rDES(){
@@ -1802,7 +1814,10 @@ function rDES(){
 
 function rBIM(){
   var d=el('dc');if(!selP||!curBC){d.innerHTML='<div class="ed"><p>Selecciona una partida</p></div>';return;}
-  var c=curBC.c[selP]||{},gs=curBC.g[selP]||[],ms=curBC.m[selP]||[];
+  var c=curBC.c[selP]||{},ms=medsDe(selP);
+  var gsAll=curBC.g[selP]||[];
+  var gs=(selPar!=null&&selPar!=='')?gsAll.filter(function(e){return e.par===undefined||e.par===selPar;}):gsAll;
+  if(selPar!=null&&selPar!==''&&!gs.length)gs=gsAll;
   var mt=ms.reduce(function(s,m){var p=m.parc!=null?m.parc:(m.nd&&m.a?m.nd*m.a:m.a||0);return s+p;},0);
   var imp=c.pr&&mt?c.pr*mt:0;
   var h='<div class="dk">Código</div><div class="dv mono">'+esc(selP)+'</div>';
@@ -1857,7 +1872,7 @@ function rBIM(){
 
 function rMED(){
   var d=el('dc');if(!selP||!curBC){d.innerHTML='<div class="ed"><p>Selecciona una partida</p></div>';return;}
-  var ms=curBC.m[selP]||[];
+  var ms=medsDe(selP);
   if(!ms.length){d.innerHTML='<div style="padding:12px;color:var(--muted);font-size:12px;">Sin mediciones</div>';return;}
   // Recuento de líneas + comparación con elementos BIM
   var nBim=0;
