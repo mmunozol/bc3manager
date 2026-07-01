@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BC3 Manager — Conversor IFC → .bc3m</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f0f13;--bg2:#17171e;--bg3:#1e1e28;
+  --border:#2a2a38;--acc:#6c63ff;--acc2:#a78bfa;
+  --ok:#34d399;--warn:#fbbf24;--err:#f87171;
+  --text:#e8e8f0;--muted:#6b6b88;--r:10px;
+}
+html,body{min-height:100vh;background:var(--bg);color:var(--text);
+  font-family:'DM Sans',sans-serif;font-size:14px;}
+body{display:flex;flex-direction:column;align-items:center;padding:32px 16px;gap:0;}
+header{width:100%;max-width:680px;display:flex;align-items:center;
+  justify-content:space-between;margin-bottom:28px;}
+.logo{font-family:'DM Mono',monospace;font-size:14px;color:var(--acc2);letter-spacing:.06em;}
+.logo em{color:var(--text);font-style:normal;}
+.logo span{font-size:11px;color:var(--muted);margin-left:6px;}
+.card{width:100%;max-width:680px;background:var(--bg2);border:1px solid var(--border);
+  border-radius:14px;padding:24px;display:flex;flex-direction:column;gap:20px;}
+.zones{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.zone{border:1.5px dashed var(--border);border-radius:var(--r);padding:20px 16px;
+  cursor:pointer;transition:all .2s;background:var(--bg);position:relative;
+  min-height:100px;display:flex;flex-direction:column;gap:5px;}
+.zone:hover,.zone.over{border-color:var(--acc);background:#1a1a2e;}
+.zone.filled{border-color:var(--ok);border-style:solid;background:#0d1f19;}
+.zone-label{font-size:10px;font-weight:600;text-transform:uppercase;
+  letter-spacing:.1em;color:var(--muted);}
+.zone.filled .zone-label{color:var(--ok);}
+.zone-name{font-size:12px;color:var(--text);font-family:'DM Mono',monospace;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:calc(100% - 36px);}
+.zone-hint{font-size:11px;color:var(--muted);}
+.zone-ico{font-size:26px;position:absolute;right:14px;top:50%;transform:translateY(-50%);
+  opacity:.25;transition:opacity .2s;}
+.zone.filled .zone-ico{opacity:.6;}
+input[type=file]{display:none;}
+.field{display:flex;flex-direction:column;gap:6px;}
+.field label{font-size:10px;font-weight:600;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--muted);}
+.field input{background:var(--bg3);border:1px solid var(--border);border-radius:8px;
+  padding:10px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;
+  outline:none;transition:border-color .15s;width:100%;}
+.field input:focus{border-color:var(--acc);}
+.field input::placeholder{color:var(--muted);}
+#btn-go{padding:13px;border-radius:var(--r);border:none;cursor:pointer;
+  font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;letter-spacing:.02em;
+  background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;transition:all .2s;}
+#btn-go:hover:not(:disabled){filter:brightness(1.1);transform:translateY(-1px);}
+#btn-go:disabled{opacity:.35;cursor:not-allowed;transform:none;}
+#prog-wrap{display:flex;flex-direction:column;gap:8px;}
+#prog-track{height:3px;background:var(--bg3);border-radius:2px;overflow:hidden;}
+#prog-bar{height:100%;width:0%;background:linear-gradient(90deg,var(--acc),var(--acc2));
+  border-radius:2px;transition:width .35s ease;}
+#log{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);
+  padding:12px 14px;height:160px;overflow-y:auto;display:flex;flex-direction:column;
+  gap:3px;font-family:'DM Mono',monospace;font-size:11px;}
+#log::-webkit-scrollbar{width:4px;}
+#log::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+.ll{display:flex;gap:8px;line-height:1.5;}
+.ll .ts{color:var(--muted);flex-shrink:0;}
+.ll.step .msg{color:var(--acc2);}
+.ll.info .msg{color:var(--muted);}
+.ll.warn .msg{color:var(--warn);}
+.ll.err  .msg{color:var(--err);}
+.ll.done .msg{color:var(--ok);font-weight:600;}
+#done{display:none;background:var(--bg3);border:1px solid var(--ok);
+  border-radius:var(--r);padding:16px 18px;flex-direction:column;gap:12px;}
+#done.show{display:flex;}
+.done-head{font-size:14px;font-weight:600;color:var(--ok);}
+.done-stats{display:flex;gap:20px;flex-wrap:wrap;}
+.stat .n{font-family:'DM Mono',monospace;font-size:18px;font-weight:500;color:var(--text);}
+.stat .l{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}
+.done-btns{display:flex;gap:10px;}
+.done-btns button{flex:1;padding:10px;border-radius:8px;border:none;cursor:pointer;
+  font-size:13px;font-weight:500;transition:all .15s;}
+.btn-dl{background:var(--ok);color:#0d1f19;}
+.btn-dl:hover{filter:brightness(1.1);}
+.btn-new{background:var(--bg2);color:var(--text);border:1px solid var(--border)!important;}
+.btn-new:hover{border-color:var(--acc)!important;}
+.note{font-size:11px;color:var(--muted);text-align:center;line-height:1.6;}
+</style>
+</head>
+<body>
+
+<header>
+  <span class="logo">BC3 <em>Manager</em> <span>Conversor IFC to bc3m</span></span>
+  <span style="font-size:11px;color:var(--muted);">Usar en Chrome o Edge</span>
+</header>
+
+<div class="card">
+  <div class="zones">
+    <div class="zone" id="z-ifc" onclick="el('f-ifc').click()"
+         ondragover="dov(event,'z-ifc')" ondragleave="dlv('z-ifc')" ondrop="ddr(event,'ifc')">
+      <span class="zone-label">Modelo IFC *</span>
+      <span class="zone-name" id="ifc-nm">Arrastra o haz clic</span>
+      <span class="zone-hint" id="ifc-sz">Archivo .ifc de Revit</span>
+      <span class="zone-ico">&#x1F9CA;</span>
+    </div>
+    <div class="zone" id="z-bc3" onclick="el('f-bc3').click()"
+         ondragover="dov(event,'z-bc3')" ondragleave="dlv('z-bc3')" ondrop="ddr(event,'bc3')">
+      <span class="zone-label">Presupuesto BC3 *</span>
+      <span class="zone-name" id="bc3-nm">Arrastra o haz clic</span>
+      <span class="zone-hint" id="bc3-sz">Archivo .bc3 de Presto</span>
+      <span class="zone-ico">&#x1F4CB;</span>
+    </div>
+  </div>
+  <input type="file" id="f-ifc" accept=".ifc" onchange="setFile('ifc',this.files[0])">
+  <input type="file" id="f-bc3" accept=".bc3,.BC3" onchange="setFile('bc3',this.files[0])">
+
+  <div class="field">
+    <label>Nombre de version</label>
+    <input type="text" id="ver-name" placeholder="PE v1.0">
+  </div>
+
+  <button id="btn-go" disabled onclick="startConvert()">Convertir a .bc3m</button>
+
+  <div id="prog-wrap">
+    <div id="prog-track"><div id="prog-bar"></div></div>
+    <div id="log"></div>
+  </div>
+
+  <div id="done">
+    <div class="done-head">Conversion completada</div>
+    <div class="done-stats" id="done-stats"></div>
+    <div class="done-btns">
+      <button class="btn-dl" id="btn-dl">Descargar .bc3m</button>
+      <button class="btn-new" onclick="resetAll()">Nueva conversion</button>
+    </div>
+  </div>
+
+  <p class="note">El proceso ocurre en tu navegador. Ningun archivo se sube a servidores externos.</p>
+</div>
+
+<script>
+const el=id=>document.getElementById(id);
+let ifcFile=null,bc3File=null,resultBlob=null,resultName='',busy=false;
+
+function dov(e,id){e.preventDefault();el(id).classList.add('over');}
+function dlv(id){el(id).classList.remove('over');}
+function ddr(e,type){e.preventDefault();dlv('z-'+type);const f=e.dataTransfer.files[0];if(f)setFile(type,f);}
+function setFile(type,f){
+  if(!f)return;
+  if(type==='ifc'){
+    ifcFile=f;el('ifc-nm').textContent=f.name;
+    el('ifc-sz').textContent=(f.size/1024/1024).toFixed(0)+' MB';
+    el('z-ifc').classList.add('filled');
+    if(!el('ver-name').value)el('ver-name').value=f.name.replace(/\.ifc$/i,'');
+  }else{
+    bc3File=f;el('bc3-nm').textContent=f.name;
+    el('bc3-sz').textContent=(f.size/1024/1024).toFixed(1)+' MB';
+    el('z-bc3').classList.add('filled');
+  }
+  el('btn-go').disabled=!(ifcFile&&bc3File);
+}
+function addLog(type,msg){
+  const d=el('log'),now=new Date().toTimeString().slice(0,8);
+  const line=document.createElement('div');line.className='ll '+type;
+  line.innerHTML='<span class="ts">'+now+'</span><span class="msg">'+msg+'</span>';
+  d.appendChild(line);d.scrollTop=d.scrollHeight;
+}
+function prog(pct){el('prog-bar').style.width=pct+'%';}
+
+function parseBC3(text){
+  const BC={c:{},h:{},m:{},g:{}};
+  const asmRE=/^([A-Z]{2,5}-\d{3,4}(?:\.\d+)?)(?:\s|$)/;
+  const ifc22RE=/[\s\-]([0-9A-Za-z_$]{22})$/;
+  let regs=[],cur='';
+  text.replace(/\r\n/g,'\n').replace(/\r/g,'\n').split('\n').forEach(l=>{
+    if(l.startsWith('~')){if(cur)regs.push(cur);cur=l;}else cur+='\n'+l;
+  });
+  if(cur)regs.push(cur);
+  regs.forEach(r=>{
+    if(r.length<2)return;
+    const t=r.slice(0,2),b=r.slice(3);
+    if(t==='~C')pC(BC,b);else if(t==='~D')pD(BC,b);else if(t==='~M')pM(BC,b,asmRE,ifc22RE);
+  });
+  return BC;
+}
+function pC(BC,s){
+  const p=s.split('|'),raw=(p[0]||'').trim(),cp=raw.split('\\')[0];
+  const code=cp.replace(/#/g,'').trim();if(!code)return;
+  BC.c[code]={code,ch:cp.includes('#'),desc:(p[2]||'').trim(),
+    ud:(p[1]||'').replace(/\\/g,'').trim(),pr:parseFloat((p[3]||'0').replace(',','.'))||0};
+}
+function pD(BC,s){
+  const p=s.split('|'),par=(p[0]||'').trim().replace(/#/g,'').trim();if(!par)return;
+  if(!BC.h[par])BC.h[par]=[];
+  const tk=(p[1]||'').split('\\');
+  for(let i=0;i<tk.length;i+=3){const h=tk[i].replace(/#/g,'').trim();if(h)BC.h[par].push(h);}
+}
+function pM(BC,s,asmRE,ifc22RE){
+  const p=s.split('|'),c0=(p[0]||'').trim(),toks=c0.split('\\');
+  let code=(toks.length>=2?toks[1]:toks[0]).replace(/#/g,'').trim();if(!code)return;
+  if(!BC.m[code])BC.m[code]=[];if(!BC.g[code])BC.g[code]=[];
+  const ls=(p.length>=4&&p[3]&&p[3].length>1)?p[3]:(p[1]||'');if(!ls)return;
+  const tk=ls.split('\\');
+  for(let i=0;i<tk.length;i+=6){
+    const txt=(tk[i+1]||'').trim();
+    const nd=parseFloat((tk[i+2]||'').replace(',','.'))||0;
+    const a=parseFloat((tk[i+3]||'').replace(',','.'))||0;
+    const b2=parseFloat((tk[i+4]||'').replace(',','.'))||0;
+    const parc=nd&&a&&b2?nd*a*b2:nd&&a?nd*a:a||0;
+    if(txt||nd||a){
+      BC.m[code].push({txt,nd,a,b:b2,parc});
+      const m22=ifc22RE.exec(txt);
+      if(m22){const esp=txt.slice(0,txt.lastIndexOf(m22[0])).replace(/[\s\-]+$/,'').trim();BC.g[code].push({ifc22:m22[1],esp,type:'ifc22'});}
+      const masm=asmRE.exec(txt);
+      if(masm)BC.g[code].push({asmCode:masm[1],esp:txt.slice(masm[0].length).trim(),type:'asm'});
+    }
+  }
+}
+
+const TYPES_NAMES=['IFCWALL','IFCWALLSTANDARDCASE','IFCSLAB','IFCCOLUMN','IFCBEAM',
+  'IFCDOOR','IFCWINDOW','IFCROOF','IFCCOVERING','IFCMEMBER','IFCPLATE',
+  'IFCSTAIR','IFCFOOTING','IFCRAILING','IFCBUILDINGELEMENTPROXY'];
+const typeIdxMap={};TYPES_NAMES.forEach((t,i)=>typeIdxMap[t]=i);
+
+function buildBin(elems){
+  let mn=Infinity,mx=-Infinity;
+  elems.forEach(e=>{for(let i=0;i<e.pos.length;i++){if(e.pos[i]<mn)mn=e.pos[i];if(e.pos[i]>mx)mx=e.pos[i];}});
+  const rng=mx-mn||1,parts=[];
+  const hdr=new ArrayBuffer(17),hv=new DataView(hdr);
+  [0x42,0x43,0x33,0x4D].forEach((b,i)=>hv.setUint8(i,b));
+  hv.setUint8(4,2);hv.setFloat32(5,mn,true);hv.setFloat32(9,rng,true);hv.setUint32(13,elems.length,true);
+  parts.push(hdr);
+  elems.forEach(e=>{
+    const ab=[];for(let i=0;i<Math.min(e.asm.length,20);i++)ab.push(e.asm.charCodeAt(i));
+    const ti=typeIdxMap[e.type]??14;
+    const hE=new ArrayBuffer(22+1+1+ab.length+12),dv=new DataView(hE);
+    for(let i=0;i<22;i++)dv.setUint8(i,i<e.guid.length?e.guid.charCodeAt(i):0);
+    dv.setUint8(22,ti);dv.setUint8(23,ab.length);
+    for(let i=0;i<ab.length;i++)dv.setUint8(24+i,ab[i]);
+    let o=24+ab.length;
+    dv.setUint8(o,e.c[0]);dv.setUint8(o+1,e.c[1]);dv.setUint8(o+2,e.c[2]);dv.setUint8(o+3,e.c[3]);
+    dv.setUint32(o+4,e.pos.length,true);dv.setUint32(o+8,e.idx.length,true);
+    parts.push(hE);
+    const qp=new Uint16Array(e.pos.length);
+    for(let i=0;i<e.pos.length;i++)qp[i]=Math.round(Math.min(Math.max((e.pos[i]-mn)/rng,0),1)*65535);
+    parts.push(qp.buffer);parts.push(e.idx.buffer);
+  });
+  const tot=parts.reduce((s,b)=>s+b.byteLength,0),out=new Uint8Array(tot);
+  let off=0;parts.forEach(b=>{out.set(new Uint8Array(b),off);off+=b.byteLength;});
+  return out;
+}
+
+let _jszip=null;
+function loadJSZip(){
+  if(_jszip)return Promise.resolve(_jszip);
+  if(typeof JSZip!=='undefined'){_jszip=JSZip;return Promise.resolve(_jszip);}
+  return new Promise((res,rej)=>{
+    const s=document.createElement('script');
+    s.src='https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+    s.onload=()=>{_jszip=window.JSZip;res(_jszip);};
+    s.onerror=()=>rej(new Error('No se pudo cargar JSZip'));
+    document.head.appendChild(s);
+  });
+}
+
+function readText(file,enc){
+  return new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>res(e.target.result);r.onerror=rej;r.readAsText(file,enc);});
+}
+function downloadBlob(blob,name){
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),10000);
+}
+
+async function startConvert(){
+  if(busy||!ifcFile||!bc3File)return;
+  busy=true;
+  el('log').innerHTML='';el('done').classList.remove('show');prog(0);
+  el('btn-go').disabled=true;el('btn-go').textContent='Convirtiendo...';
+  try{
+    addLog('step','Leyendo BC3...');prog(3);
+    const bc3Text=await readText(bc3File,'latin1');
+    const BC=parseBC3(bc3Text);
+    const nPar=Object.values(BC.c).filter(c=>!c.ch).length;
+    const nBim=Object.keys(BC.g).filter(k=>BC.g[k].length>0).length;
+    addLog('info',Object.keys(BC.c).length+' conceptos, '+nPar+' partidas, '+nBim+' con vinculos BIM');
+    prog(8);
+
+    addLog('step','Cargando motor IFC...');prog(10);
+    const mod=await import('https://unpkg.com/web-ifc@0.0.46/web-ifc-api.js');
+    const api=new mod.IfcAPI();
+    api.SetWasmPath('https://unpkg.com/web-ifc@0.0.46/');
+    await api.Init();
+    prog(14);
+
+    addLog('step','Leyendo IFC...');prog(16);
+    const ifcBuf=await ifcFile.arrayBuffer();
+    const mid=api.OpenModel(new Uint8Array(ifcBuf));
+
+    addLog('step','Extrayendo elementos...');prog(20);
+    const TIDS=[
+      {n:'IFCWALL',t:mod.IFCWALL},{n:'IFCWALLSTANDARDCASE',t:mod.IFCWALLSTANDARDCASE},
+      {n:'IFCSLAB',t:mod.IFCSLAB},{n:'IFCCOLUMN',t:mod.IFCCOLUMN},{n:'IFCBEAM',t:mod.IFCBEAM},
+      {n:'IFCDOOR',t:mod.IFCDOOR},{n:'IFCWINDOW',t:mod.IFCWINDOW},{n:'IFCROOF',t:mod.IFCROOF},
+      {n:'IFCCOVERING',t:mod.IFCCOVERING},{n:'IFCMEMBER',t:mod.IFCMEMBER},
+      {n:'IFCPLATE',t:mod.IFCPLATE},{n:'IFCSTAIR',t:mod.IFCSTAIR},
+      {n:'IFCFOOTING',t:mod.IFCFOOTING},{n:'IFCRAILING',t:mod.IFCRAILING},
+      {n:'IFCBUILDINGELEMENTPROXY',t:mod.IFCBUILDINGELEMENTPROXY}
+    ].filter(x=>x.t);
+    const e2info={};
+    for(const {n,t} of TIDS){
+      const ids=api.GetLineIDsWithType(mid,t);
+      for(let i=0;i<ids.size();i++){
+        try{const ln=api.GetLine(mid,ids.get(i));if(ln?.GlobalId?.value)e2info[ids.get(i)]={guid:ln.GlobalId.value,type:n};}catch(e){}
+      }
+    }
+    addLog('info',Object.keys(e2info).length+' elementos con GlobalId');prog(28);
+
+    addLog('step','Leyendo codigos de montaje...');prog(30);
+    const g2asm={};
+    try{
+      const asmR=/^([A-Z]{2,5}-\d{3,4}(?:\.\d+)?)(?:\s|$)/;
+      const pids=api.GetLineIDsWithType(mid,mod.IFCPROPERTYSET);
+      const qm={};
+      for(let i=0;i<pids.size();i++){
+        try{
+          const ps=api.GetLine(mid,pids.get(i),true);
+          if(ps?.Name?.value==='Pset_QuantityTakeOff'&&ps.HasProperties){
+            for(const prop of ps.HasProperties){
+              if(prop?.Name?.value==='Reference'&&prop.NominalValue){
+                const m=asmR.exec(prop.NominalValue.value||'');
+                if(m){qm[pids.get(i)]=m[1];break;}
+              }
+            }
+          }
+        }catch(e){}
+      }
+      const rids=api.GetLineIDsWithType(mid,mod.IFCRELDEFINESBYPROPERTIES);
+      for(let i=0;i<rids.size();i++){
+        try{
+          const rel=api.GetLine(mid,rids.get(i),true);
+          if(!rel?.RelatingPropertyDefinition?.expressID||!rel.RelatedObjects)continue;
+          const code=qm[rel.RelatingPropertyDefinition.expressID];if(!code)continue;
+          for(const obj of rel.RelatedObjects){const info=e2info[obj.expressID];if(info)g2asm[info.guid]=code;}
+        }catch(e){}
+      }
+      addLog('info',Object.keys(g2asm).length+' elementos con codigo de montaje');
+    }catch(e){addLog('warn','Pset_QuantityTakeOff no encontrado');}
+    prog(38);
+
+    addLog('step','Extrayendo geometria (puede tardar unos minutos)...');prog(40);
+    const elems=[];let totalV=0,MAXV=4000000,done2=0,tot2=Object.keys(e2info).length;
+    api.StreamAllMeshes(mid,im=>{
+      if(totalV>MAXV)return;
+      const info=e2info[im.expressID];if(!info)return;
+      const posAll=[],idxAll=[];let bV=0,r=.7,g=.7,b=.7,a=1;
+      const geos=im.geometries;
+      for(let gi=0;gi<geos.size();gi++){
+        const geo=geos.get(gi);
+        try{
+          const gd=api.GetGeometry(mid,geo.geometryExpressID);
+          const verts=api.GetVertexArray(gd.GetVertexData(),gd.GetVertexDataSize());
+          const idx=api.GetIndexArray(gd.GetIndexData(),gd.GetIndexDataSize());
+          if(!verts||!idx||verts.length<6){gd.delete();continue;}
+          const nv=verts.length/6,mat=geo.flatTransformation;
+          const [m00,m10,m20,,m01,m11,m21,,m02,m12,m22,,m03,m13,m23]=mat;
+          for(let vi=0;vi<nv;vi++){
+            const x=verts[vi*6],y=verts[vi*6+1],z=verts[vi*6+2];
+            posAll.push(m00*x+m01*y+m02*z+m03,m10*x+m11*y+m12*z+m13,m20*x+m21*y+m22*z+m23);
+          }
+          for(let ii=0;ii<idx.length;ii++)idxAll.push(idx[ii]+bV);
+          bV+=nv;const c2=geo.color;r=c2.x;g=c2.y;b=c2.z;a=c2.w;gd.delete();
+        }catch(e){}
+      }
+      if(posAll.length>0){
+        totalV+=posAll.length/3;
+        elems.push({guid:info.guid,type:info.type,asm:g2asm[info.guid]||'',
+          c:[Math.round(r*255),Math.round(g*255),Math.round(b*255),Math.round(a*255)],
+          pos:new Float32Array(posAll),idx:new Uint32Array(idxAll)});
+        done2++;if(done2%300===0)prog(40+Math.min(Math.round(done2/tot2*40),40));
+      }
+    });
+    api.CloseModel(mid);
+    addLog('info',elems.length.toLocaleString()+' meshes, '+totalV.toLocaleString()+' vertices');prog(82);
+
+    addLog('step','Generando .bin...');prog(84);
+    const binData=buildBin(elems);
+    addLog('info','Bin: '+(binData.byteLength/1024/1024).toFixed(1)+' MB');
+
+    addLog('step','Empaquetando .bc3m...');prog(90);
+    const JSZip=await loadJSZip();
+    const verName=el('ver-name').value.trim()||ifcFile.name.replace(/\.ifc$/i,'');
+    const zip=new JSZip();
+    zip.file('manifest.json',JSON.stringify({
+      version:2,appVersion:'bc3m-v1',exportedAt:new Date().toISOString(),
+      project:{id:'p_'+Date.now(),name:verName,address:'',client:''},
+      versionMeta:{id:'v_'+Date.now(),name:verName,status:'current',notes:'',
+        createdAt:Date.now(),nPartidas:nPar,nBimLinked:Object.keys(g2asm).length,
+        ifcName:ifcFile.name,hasBin:true}
+    }));
+    zip.file('bc3.json',JSON.stringify(BC));
+    zip.file('model.bin',binData);
+    const zipBlob=await zip.generateAsync({type:'blob',compression:'DEFLATE',compressionOptions:{level:6}});
+    prog(100);
+    const safeName=verName.replace(/[^a-zA-Z0-9_ -]/g,'_').trim().slice(0,40);
+    resultName=safeName+'.bc3m';resultBlob=zipBlob;
+    addLog('done','Listo: '+resultName+' ('+(zipBlob.size/1024/1024).toFixed(1)+' MB)');
+    el('done-stats').innerHTML=
+      '<div class="stat"><span class="n">'+elems.length.toLocaleString()+'</span><span class="l">Elementos</span></div>'+
+      '<div class="stat"><span class="n">'+nPar.toLocaleString()+'</span><span class="l">Partidas BC3</span></div>'+
+      '<div class="stat"><span class="n">'+Object.keys(g2asm).length.toLocaleString()+'</span><span class="l">Vinculados</span></div>'+
+      '<div class="stat"><span class="n">'+(zipBlob.size/1024/1024).toFixed(1)+' MB</span><span class="l">Tamano</span></div>';
+    el('done').classList.add('show');
+    el('btn-dl').onclick=()=>downloadBlob(resultBlob,resultName);
+  }catch(e){addLog('err','Error: '+e.message);console.error(e);}
+  el('btn-go').textContent='Convertir a .bc3m';
+  el('btn-go').disabled=!(ifcFile&&bc3File);busy=false;
+}
+
+function resetAll(){
+  ifcFile=null;bc3File=null;resultBlob=null;
+  ['ifc','bc3'].forEach(t=>{
+    el('z-'+t).classList.remove('filled');
+    el(t+'-nm').textContent='Arrastra o haz clic';
+    el(t+'-sz').textContent=t==='ifc'?'Archivo .ifc de Revit':'Archivo .bc3 de Presto';
+    el('f-'+t).value='';
+  });
+  el('ver-name').value='';el('log').innerHTML='';
+  el('done').classList.remove('show');el('prog-bar').style.width='0%';
+  el('btn-go').disabled=true;
+}
+</script>
+</body>
+</html>
