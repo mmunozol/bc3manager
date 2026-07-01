@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache,no-store,must-revalidate">
-<!-- BC3 Manager v2.38 — layout rewrite: full-width on IFC hide, portrait fix, col swap -->
+<!-- BC3 Manager v2.39 — layout rewrite: full-width on IFC hide, portrait fix, col swap -->
 <title>BC3 Manager</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0f0f13">
@@ -552,7 +552,7 @@ html.dark .sri-snippet mark{background:rgba(59,130,246,.22);}
 <!-- HOME -->
 <div class="view active" id="v-home">
   <div class="topbar">
-    <div class="logo">BC3 <em>Manager</em> <span id="dev-ind" style="font-size:9px;color:var(--muted);font-weight:400;margin-left:4px;">v2.38</span></div>
+    <div class="logo">BC3 <em>Manager</em> <span id="dev-ind" style="font-size:9px;color:var(--muted);font-weight:400;margin-left:4px;">v2.39</span></div>
     <div class="tr">
       <input type="file" id="fimport-home" style="position:absolute;left:-9999px;" accept=".bc3m">
       <input type="file" id="f-restore" style="position:absolute;left:-9999px;" accept=".bc3mbackup,.json,application/octet-stream,application/json,*/*">
@@ -576,7 +576,7 @@ html.dark .sri-snippet mark{background:rgba(59,130,246,.22);}
 <!-- PROYECTO -->
 <div class="view" id="v-proj">
   <div class="topbar">
-    <div class="logo">BC3 <em>Manager</em> <span style="font-size:9px;color:var(--muted);font-weight:400;margin-left:4px;">v2.38</span></div>
+    <div class="logo">BC3 <em>Manager</em> <span style="font-size:9px;color:var(--muted);font-weight:400;margin-left:4px;">v2.39</span></div>
     <span style="color:var(--bd2);font-size:16px;">|</span>
     <button class="btn" id="bh2" style="display:inline-flex;align-items:center;gap:5px;font-weight:500;">
       <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
@@ -606,7 +606,7 @@ html.dark .sri-snippet mark{background:rgba(59,130,246,.22);}
 <!-- VISOR -->
 <div class="view" id="v-visor">
   <div class="topbar">
-    <div class="logo">BC3 <em>Manager</em> <span style="font-size:9px;color:var(--muted);font-weight:400;margin-left:2px;">v2.38</span></div>
+    <div class="logo">BC3 <em>Manager</em> <span style="font-size:9px;color:var(--muted);font-weight:400;margin-left:2px;">v2.39</span></div>
     <span style="color:var(--bd2);font-size:16px;">|</span>
     <button class="btn" id="bp3" style="display:inline-flex;align-items:center;gap:5px;font-weight:500;">
       <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
@@ -1426,8 +1426,12 @@ function pM(BC,s,asmRE,ifc22RE){
     var L=parseFloat((tk[i+3]||'').replace(',','.'))||0;
     var A=parseFloat((tk[i+4]||'').replace(',','.'))||0;
     var H=parseFloat((tk[i+5]||'').replace(',','.'))||0;
-    var parc=nd&&L&&A&&H?nd*L*A*H:nd&&L&&A?nd*L*A:nd&&L?nd*L:L&&A?L*A:L||nd||0;
-    if(txt||nd||L||A){
+    // Criterio general FIEBDC-3: la parcial es el producto de las cuatro
+    // columnas (N·L·A·H). Una columna vacía cuenta como multiplicador 1.
+    // Si TODAS están vacías, la línea no mide nada (parcial 0) — es un subtítulo.
+    var hayValor=(nd||L||A||H);
+    var parc=hayValor?(nd||1)*(L||1)*(A||1)*(H||1):0;
+    if(txt||nd||L||A||H){
       BC.m[code].push({txt:txt,nd:nd,a:L,b:A,h:H,parc:parc});
       var m22=ifc22RE.exec(txt);
       if(m22){var esp=txt.slice(0,txt.lastIndexOf(m22[0])).replace(/[\s\-\[\]]+$/,'').trim();
@@ -1587,7 +1591,7 @@ function renderTree(){
       document.querySelectorAll('.tn').forEach(function(n){n.classList.remove('s');});
       row.classList.add('s');
       selP=code;renderDet();
-      if(xv&&curBC)hlPart(code,curBC);
+      if(xv&&curBC)hlPart(code,curBC,row.dataset.par||'');
     });
     var wrap=document.createElement('div');
     wrap.appendChild(row);wrap.appendChild(cw);
@@ -1858,7 +1862,7 @@ function rMED(){
     +'</div>';
   h+='<table class="mt"<thead><tr><th>Descripción</th><th class="nr">N</th><th class="nr">L</th><th class="nr">A</th><th class="nr">H</th><th class="nr">Cant.</th></tr></thead><tbody>';
   ms.forEach(function(m){
-    var parc=m.parc!=null?m.parc:(m.nd&&m.a?m.nd*m.a:m.a||0);
+    var parc=m.parc!=null?m.parc:((m.nd||m.a||m.b||m.h)?((m.nd||1)*(m.a||1)*(m.b||1)*(m.h||1)):0);
     tot+=parc;
     h+='<tr><td>'+esc(m.txt||'—')+'</td><td class="nr">'+(m.nd||'')+'</td><td class="nr">'+(m.a||'')+'</td><td class="nr">'+(m.b||'')+'</td><td class="nr">'+(m.h||'')+'</td><td class="nr">'+(parc?parc.toFixed(2):'')+'</td></tr>';
   });
@@ -2264,11 +2268,14 @@ function expandGuid(g){
   return [g];
 }
 
-function hlPart(code,BC){
+function hlPart(code,BC,par){
   if(!xv||!xscene)return;
   xscene.setObjectsSelected(xscene.selectedObjectIds,false);
   var guids=new Set();
   (BC.g[code]||[]).forEach(function(e){
+    // Si se indica par (padre del nodo pinchado), solo los GUIDs de mediciones
+    // que cuelgan de ese capítulo → evita resaltar una partida homónima de otro.
+    if(par!=null&&par!==''&&e.par!==undefined&&e.par!==par)return;
     if(e.type==='asm')(asm2g[e.asmCode]||[]).forEach(function(g){guids.add(g);});
     else if(e.ifc22)expandGuid(e.ifc22).forEach(function(g){guids.add(g);});
   });
@@ -2520,7 +2527,7 @@ function showHC(name,partida,esp){
       for(var i=0;i<ms.length;i++){
         var t=ms[i].txt||'';
         if(t===esp||(t&&esp&&(t.indexOf(esp)===0||esp.indexOf(t)===0))){
-          parc=ms[i].parc!=null?ms[i].parc:(ms[i].nd&&ms[i].a?ms[i].nd*ms[i].a:ms[i].a||0);
+          parc=ms[i].parc!=null?ms[i].parc:((ms[i].nd||ms[i].a||ms[i].b||ms[i].h)?((ms[i].nd||1)*(ms[i].a||1)*(ms[i].b||1)*(ms[i].h||1)):0);
           break;
         }
       }
